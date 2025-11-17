@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="View">
+      <UniqueIdentifier>{0F1E2D3C-4B5A-6978-90AB-CDEF12345678}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MFC">
+      <UniqueIdentifier>{12345678-90AB-CDEF-1234-567890ABCDEF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components">
+      <UniqueIdentifier>{FEDCBA09-8765-4321-0FED-CBA987654321}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ClickerGame.h">
+      <Filter>MFC</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>MFC</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>MFC</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>MFC</Filter>
+    </ClInclude>
+    <ClInclude Include="ClickerGameDoc.h">
+      <Filter>MFC</Filter>
+    </ClInclude>
+    <ClInclude Include="ClickerGameView.h">
+      <Filter>MFC</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>MFC</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>MFC</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="MainDialog.h">
+      <Filter>View</Filter>
+    </ClInclude>
+    <ClInclude Include="GdiButton.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="GdiIconButton.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="GdiAtlasButton.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PathResolver.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ClickerButton.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ClickerGame.cpp">
+      <Filter>MFC</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>MFC</Filter>
+    </ClCompile>
+    <ClCompile Include="ClickerGameDoc.cpp">
+      <Filter>MFC</Filter>
+    </ClCompile>
+    <ClCompile Include="ClickerGameView.cpp">
+      <Filter>MFC</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>MFC</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="MainDialog.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GdiButton.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="GdiIconButton.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="GdiAtlasButton.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ClickerButton.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClickerGame.reg" />
+    <None Include="res\ClickerGame.rc2">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="kill_process.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ClickerGame.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\ClickerGameDoc.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\ClickerGame.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\Toolbar.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
