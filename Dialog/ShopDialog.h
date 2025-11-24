@@ -55,6 +55,8 @@ private:
 	GdiText m_tooltipTitle;
 	GdiText m_tooltipStats;
 	GdiText m_tooltipDesc;
+	GdiText m_quantityText;
+	GdiText m_itemNameText;
 
 	// 드래그 관련
 	bool m_bDragging;

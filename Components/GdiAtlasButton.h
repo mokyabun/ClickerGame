@@ -28,7 +28,8 @@ private:
 	{
 		Normal,
 		Hover,
-		Pressed
+		Pressed,
+		Disabled
 	};
 
 	Gdiplus::Image* m_pAtlasImage;
@@ -41,4 +42,7 @@ private:
 	Gdiplus::Image* m_pExtractedPressed;
 
 	ButtonState m_state;
+
+public:
+	afx_msg void OnEnable(BOOL bEnable);
 };

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <atlstr.h>
 
 class PathResolver
@@ -10,29 +10,29 @@ public:
         return instance;
     }
 
-    // 리소스 경로 얻기
+    // ë¦¬ì†ŒìŠ¤ ê²½ë¡œ ì–»ê¸°
     CString GetResourcePath(const CString& relativePath)
     {
         return m_resourceBasePath + relativePath;
     }
 
-    // 절대 경로로 변환
+    // ì ˆëŒ€ ê²½ë¡œë¡œ ë³€í™˜
     CString GetAbsolutePath(const CString& relativePath)
     {
         return m_basePath + relativePath;
     }
 
-    // 베이스 경로 설정 (테스트용)
+    // ë² ì´ìŠ¤ ê²½ë¡œ ì„¤ì • (í…ŒìŠ¤íŠ¸ìš©)
     void SetBasePath(const CString& basePath)
     {
         m_basePath = basePath;
-        if (!m_basePath.IsEmpty() && m_basePath.Right(1) != L"\\")
-            m_basePath += L"\\";
+        if (!m_basePath.IsEmpty() && m_basePath.Right(1) != _T("\\"))
+            m_basePath += _T("\\");
 
-        m_resourceBasePath = m_basePath + L"Resources\\";
+        m_resourceBasePath = m_basePath + _T("Resources\\");
     }
 
-    // 현재 베이스 경로 가져오기
+    // í˜„ìž¬ ë² ì´ìŠ¤ ê²½ë¡œ ê°€ì ¸ì˜¤ê¸°
     CString GetBasePath() const
     {
         return m_basePath;
@@ -54,27 +54,27 @@ private:
         if (pos != -1)
             exeDir = exeDir.Left(pos + 1);
 
-        // 디버그 모드인지 확인 (x64\Debug 또는 x64\Release 경로 확인)
-        if (exeDir.Find(L"\\x64\\Debug") != -1 || exeDir.Find(L"\\x64\\Release") != -1)
+        // ë””ë²„ê·¸ ëª¨ë“œì¸ì§€ í™•ì¸ (x64\Debug ë˜ëŠ” x64\Release ê²½ë¡œ í™•ì¸)
+        if (exeDir.Find(_T("\\x64\\Debug")) != -1 || exeDir.Find(_T("\\x64\\Release")) != -1)
         {
-            // 개발 환경: 프로젝트 루트로 이동
-            m_basePath = exeDir + L"..\\..\\";
+            // ê°œë°œ í™˜ê²½: í”„ë¡œì íŠ¸ ë£¨íŠ¸ë¡œ ì´ë™
+            m_basePath = exeDir + _T("..\\..\\");
         }
         else
         {
-            // 배포 환경: 실행 파일과 같은 폴더
+            // ë°°í¬ í™˜ê²½: ì‹¤í–‰ íŒŒì¼ê³¼ ê°™ì€ í´ë”
             m_basePath = exeDir;
         }
 
-        // 정규화된 경로로 변환
+        // ì •ê·œí™”ëœ ê²½ë¡œë¡œ ë³€í™˜
         WCHAR fullPath[MAX_PATH];
         GetFullPathName(m_basePath, MAX_PATH, fullPath, NULL);
         m_basePath = fullPath;
         
-        if (!m_basePath.IsEmpty() && m_basePath.Right(1) != L"\\")
-            m_basePath += L"\\";
+        if (!m_basePath.IsEmpty() && m_basePath.Right(1) != _T("\\"))
+            m_basePath += _T("\\");
 
-        m_resourceBasePath = m_basePath + L"Resources\\";
+        m_resourceBasePath = m_basePath + _T("Resources\\");
     }
 
     PathResolver(const PathResolver&) = delete;

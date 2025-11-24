@@ -35,7 +35,7 @@ CClickerGameApp::CClickerGameApp() noexcept : m_gdiplusToken(0)
 
 	// TODO: 아래 애플리케이션 ID 문자열을 고유 ID 문자열로 바꾸십시오(권장).
 	// 문자열에 대한 서식: CompanyName.ProductName.SubProduct.VersionInformation
-	SetAppID(_T("ClickerGame.AppID.NoVersion"));
+	SetAppID(__T("ClickerGame.AppID.NoVersion"));
 
 	// TODO: 여기에 생성 코드를 추가합니다.
 	// InitInstance에 모든 중요한 초기화 작업을 배치합니다.
@@ -78,7 +78,7 @@ BOOL CClickerGameApp::InitInstance()
 	// 해당 설정이 저장된 레지스트리 키를 변경하십시오.
 	// TODO: 이 문자열을 회사 또는 조직의 이름과 같은
 	// 적절한 내용으로 수정해야 합니다.
-	SetRegistryKey(_T("로컬 애플리케이션 마법사에서 생성된 애플리케이션"));
+	SetRegistryKey(__T("로컬 애플리케이션 마법사에서 생성된 애플리케이션"));
 	LoadStdProfileSettings(4);  // MRU를 포함하여 표준 INI 파일 옵션을 로드합니다.
 
 	// MainDialog를 모달리스 다이얼로그로 생성

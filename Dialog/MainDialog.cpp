@@ -7,6 +7,7 @@
 #include "ClickerGameDoc.h"
 #include "PathResolver.h"
 #include "GdiText.h"
+#include "ParticleSystem.h"
 #include <shlobj.h>
 #include <ctime>
 
@@ -87,13 +88,13 @@ void CMainDialog::OnGdiInitialize()
 	CenterWindow();
 
 	// GDI+ 배경 이미지 로드
-	CString imagePath = PathResolver::GetInstance().GetResourcePath(L"Main\\Background.png");
+	CString imagePath = PathResolver::GetInstance().GetResourcePath(_T("Main\\Background.png"));
 	m_pBackgroundImage = Gdiplus::Image::FromFile(imagePath);
 	if (m_pBackgroundImage == nullptr || m_pBackgroundImage->GetLastStatus() != Gdiplus::Ok)
 	{
 		CString msg;
-		msg.Format(L"배경 이미지를 로드할 수 없습니다!\n경로: %s", imagePath);
-		MessageBox(msg, L"오류", MB_OK | MB_ICONERROR);
+		msg.Format(_T("배경 이미지를 로드할 수 없습니다!\n경로: %s"), imagePath);
+		MessageBox(msg, _T("오류"), MB_OK | MB_ICONERROR);
 	}
 
 	// 닫기 버튼
@@ -104,7 +105,7 @@ void CMainDialog::OnGdiInitialize()
 	
 	CRect btnRect(800 - btnWidth - xMargin, yMargin, 800 - xMargin, yMargin + btnHeight);
 	m_btnClose.Create(L"", btnRect, this, 1002);
-	m_btnClose.SetAtlasImage(L"Main\\X.png", btnWidth, btnHeight);
+	m_btnClose.SetAtlasImage(_T("Shared\\X.png"), btnWidth, btnHeight);
 
 	// 상점 버튼
 	const int shopBtnWidth = 75;
@@ -113,10 +114,10 @@ void CMainDialog::OnGdiInitialize()
 	const int shopY = 40;
 	CRect shopBtnRect(shopX, shopY, shopX + shopBtnWidth, shopY + shopBtnHeight);
 	m_btnShop.Create(L"", shopBtnRect, this, 1004);
-	m_btnShop.SetIconImage(L"Main\\Shop.png");
-	m_btnShop.SetName(L"Shop");
+	m_btnShop.SetIconImage(_T("Main\\Shop.png"));
+	m_btnShop.SetName(_T("Shop"));
 	m_btnShop.SetTextColor(Gdiplus::Color(255, 255, 255, 255));
-	m_btnShop.SetFont(L"Tahoma", 10.0f, Gdiplus::FontStyleRegular);
+	m_btnShop.SetFont(_T("Tahoma"), 10.0f, Gdiplus::FontStyleRegular);
 	m_btnShop.SetOnClickCallback([this]() { OnShopButtonClick(); });
 	m_btnShop.SetOnTriggerCallback([this]() { OnShopButtonTrigger(); });
 
@@ -125,10 +126,10 @@ void CMainDialog::OnGdiInitialize()
 	const int upgradeY = shopY + shopBtnHeight + 10;
 	CRect upgradeBtnRect(upgradeX, upgradeY, upgradeX + shopBtnWidth, upgradeY + shopBtnHeight);
 	m_btnUpgrade.Create(L"", upgradeBtnRect, this, 1005);
-	m_btnUpgrade.SetIconImage(L"Main\\Upgrade.png");
-	m_btnUpgrade.SetName(L"Upgrade");
+	m_btnUpgrade.SetIconImage(_T("Main\\Upgrade.png"));
+	m_btnUpgrade.SetName(_T("Upgrade"));
 	m_btnUpgrade.SetTextColor(Gdiplus::Color(255, 255, 255, 255));
-	m_btnUpgrade.SetFont(L"Tahoma", 10.0f, Gdiplus::FontStyleRegular);
+	m_btnUpgrade.SetFont(_T("Tahoma"), 10.0f, Gdiplus::FontStyleRegular);
 	m_btnUpgrade.SetOnClickCallback([this]() { OnUpgradeButtonClick(); });
 	m_btnUpgrade.SetOnTriggerCallback([this]() { OnUpgradeButtonTrigger(); });
 
@@ -137,10 +138,10 @@ void CMainDialog::OnGdiInitialize()
 	const int settingsY = upgradeY + shopBtnHeight + 10;
 	CRect settingsBtnRect(settingsX, settingsY, settingsX + shopBtnWidth, settingsY + shopBtnHeight);
 	m_btnSettings.Create(L"", settingsBtnRect, this, 1006);
-	m_btnSettings.SetIconImage(L"Main\\Settings.png");
-	m_btnSettings.SetName(L"Settings");
+	m_btnSettings.SetIconImage(_T("Main\\Settings.png"));
+	m_btnSettings.SetName(_T("Settings"));
 	m_btnSettings.SetTextColor(Gdiplus::Color(255, 255, 255, 255));
-	m_btnSettings.SetFont(L"Tahoma", 10.0f, Gdiplus::FontStyleRegular);
+	m_btnSettings.SetFont(_T("Tahoma"), 10.0f, Gdiplus::FontStyleRegular);
 	m_btnSettings.SetOnClickCallback([this]() { OnSettingsButtonClick(); });
 	m_btnSettings.SetOnTriggerCallback([this]() { OnSettingsButtonTrigger(); });
 
@@ -155,35 +156,44 @@ void CMainDialog::OnGdiInitialize()
 	
 	CRect virusBtnRect(centerX, centerY, centerX + expandedWidth, centerY + expandedHeight);
 	m_btnVirus.Create(L"", virusBtnRect, this, 1003);
-	m_btnVirus.SetImage(L"Main\\Virus.png");
+	m_btnVirus.SetImage(_T("Main\\Virus.png"));
 
 	// Windows XP 타이틀
-	m_titleText.SetText(L"Windows XP");
-	m_titleText.SetFont(L"Tahoma", 10.0f, Gdiplus::FontStyleBold);
+	m_titleText.SetText(_T("Windows XP"));
+	m_titleText.SetFont(_T("Tahoma"), 10.0f, Gdiplus::FontStyleBold);
 	m_titleText.SetColor(255, 255, 255, 255);
 	m_titleText.SetShadowStyle(GdiText::ShadowStyle::DropShadow);
 	m_titleText.SetShadowColor(180, 0, 0, 0);
 	m_titleText.SetShadowOffset(1.0f, 1.0f);
 
 	// 2. 재화 텍스트 (초기값)
-	m_currencyText.SetText(L"0 ZPC");
-	m_currencyText.SetFont(L"Tahoma", 20.0f, Gdiplus::FontStyleBoldItalic);
+	m_currencyText.SetText(_T("0 ZPC"));
+	m_currencyText.SetFont(_T("Tahoma"), 20.0f, Gdiplus::FontStyleBoldItalic);
 	m_currencyText.SetColor(255, 255, 255, 255);
 	m_currencyText.SetAlignment(Gdiplus::StringAlignmentCenter);
 	m_currencyText.SetShadowStyle(GdiText::ShadowStyle::DropShadow);
 	m_currencyText.SetShadowColor(200, 0, 0, 0);
 	m_currencyText.SetShadowOffset(1.0f, 1.0f);
 
+	// 초당 생산량 텍스트
+	m_productionText.SetText(_T("0 ZPC/s"));
+	m_productionText.SetFont(_T("맑은 고딕"), 11.0f, Gdiplus::FontStyleRegular);
+	m_productionText.SetColor(255, 200, 220, 255);
+	m_productionText.SetAlignment(Gdiplus::StringAlignmentCenter);
+	m_productionText.SetShadowStyle(GdiText::ShadowStyle::DropShadow);
+	m_productionText.SetShadowColor(180, 0, 0, 0);
+	m_productionText.SetShadowOffset(1.0f, 1.0f);
+
 	// 3. "시작" 텍스트
-	m_startText.SetText(L"시작");
-	m_startText.SetFont(L"맑은 고딕", 13.0f, Gdiplus::FontStyleBold);
+	m_startText.SetText(_T("시작"));
+	m_startText.SetFont(_T("맑은 고딕"), 13.0f, Gdiplus::FontStyleBold);
 	m_startText.SetColor(255, 255, 255, 255);
 	m_startText.SetShadowStyle(GdiText::ShadowStyle::DropShadow);
 	m_startText.SetShadowColor(180, 0, 0, 0);
 	m_startText.SetShadowOffset(1.0f, 1.0f);
 
 	// 4. 시계 텍스트 (초기 설정)
-	m_clockText.SetFont(L"Tahoma", 8.0f, Gdiplus::FontStyleBold);
+	m_clockText.SetFont(_T("Tahoma"), 8.0f, Gdiplus::FontStyleBold);
 	m_clockText.SetColor(255, 255, 255, 255);
 	m_clockText.SetShadowStyle(GdiText::ShadowStyle::None);
 
@@ -198,10 +208,10 @@ void CMainDialog::OnGdiInitialize()
 	TCHAR appDataPath[MAX_PATH];
 	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, appDataPath)))
 	{
-		m_saveFilePath.Format(L"%s\\ClickerGame", appDataPath);
+		m_saveFilePath.Format(_T("%s\\ClickerGame"), appDataPath);
 		// 디렉토리 생성
 		CreateDirectory(m_saveFilePath, NULL);
-		m_saveFilePath += L"\\autosave.json";
+		m_saveFilePath += _T("\\autosave.json");
 		
 		// 기존 저장 파일 로드
 		LoadGameState();
@@ -258,13 +268,13 @@ void CMainDialog::OnUpdateLogic(float deltaTime)
     // Frenzy Spawning Logic
     if (m_frenzySpawnTimer > 0) {
         m_frenzySpawnTimer -= deltaTime;
-        // TRACE(L"Frenzy Timer: %.2f\n", m_frenzySpawnTimer); // Too spammy, maybe log every integer change?
+        // TRACE(_T("Frenzy Timer: %.2f\n"), m_frenzySpawnTimer); // Too spammy, maybe log every integer change?
         if (m_frenzySpawnTimer <= 0) {
-            TRACE(L"Frenzy Timer Reached 0! Spawning Dialog...\n");
+            TRACE(_T("Frenzy Timer Reached 0! Spawning Dialog...\n"));
             SpawnFrenzyDialog();
             // Reset timer to random interval (e.g., 60s to 180s)
             m_frenzySpawnTimer = 60.0 + (rand() % 120);
-            TRACE(L"Next Frenzy Spawn in %.2f seconds\n", m_frenzySpawnTimer);
+            TRACE(_T("Next Frenzy Spawn in %.2f seconds\n"), m_frenzySpawnTimer);
         }
     }
 	
@@ -277,8 +287,24 @@ void CMainDialog::OnUpdateLogic(float deltaTime)
 	if (m_pDoc)
 	{
 		CString currencyText;
-		currencyText.Format(L"%.0f ZPC", m_pDoc->GetGameCore().GetTotalClicks());
+		currencyText.Format(_T("%.0f ZPC"), m_pDoc->GetGameCore().GetTotalClicks());
 		m_currencyText.SetText(currencyText);
+
+		// 초당 생산량 텍스트
+		double productionRate = m_pDoc->GetGameCore().GetAutoProductionRate();
+		CString productionText;
+		if (m_pDoc->GetGameCore().IsFrenzyActive())
+		{
+			double multiplier = m_pDoc->GetGameCore().GetFrenzyMultiplier();
+			productionText.Format(_T("%.1f ZPC/s (x%.0f)"), productionRate, multiplier);
+			m_productionText.SetColor(255, 255, 100, 100); // Frenzy 활성 시 빨간색
+		}
+		else
+		{
+			productionText.Format(_T("%.1f ZPC/s"), productionRate);
+			m_productionText.SetColor(255, 200, 220, 255); // 기본 색상
+		}
+		m_productionText.SetText(productionText);
 	}
 
 	// 2. 시계 텍스트
@@ -289,7 +315,7 @@ void CMainDialog::OnUpdateLogic(float deltaTime)
 		CString timeStr;
 		int hour12 = st.wHour % 12;
 		if (hour12 == 0) hour12 = 12;
-		timeStr.Format(L"%d:%02d %s", hour12, st.wMinute, st.wHour >= 12 ? L"PM" : L"AM");
+		timeStr.Format(_T("%d:%02d %s"), hour12, st.wMinute, st.wHour >= 12 ? _T("PM") : _T("AM"));
 		
 		m_clockText.SetText(timeStr);
 	}
@@ -306,11 +332,11 @@ void CMainDialog::OnRenderContent(Gdiplus::Graphics& graphics, float deltaTime)
 	// Windows XP 텍스트
 	m_titleText.Draw(graphics, 29.0f, 6.0f);
 	
-	// 파티클 렌더링
-	m_particleSystem.Draw(graphics);
-	
 	// ZPC 재화 표시
 	m_currencyText.Draw(graphics, 400.0f, 55.0f);
+	
+	// 초당 생산량 표시 (재화 아래)
+	m_productionText.Draw(graphics, 400.0f, 82.0f);
 	
 	// 시작 텍스트
 	m_startText.Draw(graphics, 35.0f, 568.0f);
@@ -324,6 +350,9 @@ void CMainDialog::OnRenderContent(Gdiplus::Graphics& graphics, float deltaTime)
 	m_btnUpgrade.Draw(graphics, deltaTime);
 	m_btnSettings.Draw(graphics, deltaTime);
 	m_btnClose.Draw(graphics, deltaTime);
+	
+	// 파티클 렌더링 (버튼 위에 그려짐)
+	m_particleSystem.Draw(graphics);
 }
 
 BOOL CMainDialog::OnEraseBkgnd(CDC* pDC)
@@ -473,8 +502,8 @@ void CMainDialog::SaveGameState()
 	if (!m_pDoc || m_saveFilePath.IsEmpty())
 		return;
 	
-	// Document의 SaveToFile 메서드 사용
-	m_pDoc->SaveToFile(m_saveFilePath);
+	// MFC Document의 표준 저장 메서드 사용
+	m_pDoc->OnSaveDocument(m_saveFilePath);
 }
 
 void CMainDialog::LoadGameState()
@@ -482,8 +511,8 @@ void CMainDialog::LoadGameState()
 	if (!m_pDoc || m_saveFilePath.IsEmpty())
 		return;
 	
-	// Document의 LoadFromFile 메서드 사용
-	m_pDoc->LoadFromFile(m_saveFilePath);
+	// MFC Document의 표준 로드 메서드 사용
+	m_pDoc->OnOpenDocument(m_saveFilePath);
 }
 
 void CMainDialog::OnShopButtonClick()
@@ -496,15 +525,15 @@ void CMainDialog::OnShopButtonClick()
 	}
 	
 	CString msg;
-	msg.Format(L"상점 버튼 클릭 - 선택 상태: %s", 
-		m_btnShop.IsSelected() ? L"선택됨" : L"선택 안됨");
-	TRACE(msg + L"\n");
+	msg.Format(_T("상점 버튼 클릭 - 선택 상태: %s"), 
+		m_btnShop.IsSelected() ? _T("선택됨") : _T("선택 안됨"));
+	TRACE(msg + _T("\n"));
 }
 
 void CMainDialog::OnShopButtonTrigger()
 {
 	// 상점 버튼 더블클릭 시 (트리거)
-	TRACE(L"상점 버튼 더블클릭 - 상점 열기\n");
+	TRACE(_T("상점 버튼 더블클릭 - 상점 열기\n"));
 	
 	// 이미 열려있으면 포커스만 주기
 	if (m_pShopDialog && m_pShopDialog->GetSafeHwnd())
@@ -548,15 +577,15 @@ void CMainDialog::OnUpgradeButtonClick()
 	}
 	
 	CString msg;
-	msg.Format(L"업그레이드 버튼 클릭 - 선택 상태: %s", 
-		m_btnUpgrade.IsSelected() ? L"선택됨" : L"선택 안됨");
-	TRACE(msg + L"\n");
+	msg.Format(_T("업그레이드 버튼 클릭 - 선택 상태: %s"), 
+		m_btnUpgrade.IsSelected() ? _T("선택됨") : _T("선택 안됨"));
+	TRACE(msg + _T("\n"));
 }
 
 void CMainDialog::OnUpgradeButtonTrigger()
 {
 	// 업그레이드 버튼 더블클릭 시 (트리거)
-	TRACE(L"업그레이드 버튼 더블클릭 - 업그레이드 열기\n");
+	TRACE(_T("업그레이드 버튼 더블클릭 - 업그레이드 열기\n"));
 	
 	// 이미 열려있으면 포커스만 주기
 	if (m_pUpgradeDialog && m_pUpgradeDialog->GetSafeHwnd())
@@ -600,16 +629,15 @@ void CMainDialog::OnSettingsButtonClick()
 	}
 	
 	CString msg;
-	msg.Format(L"설정 버튼 클릭 - 선택 상태: %s", 
-		m_btnSettings.IsSelected() ? L"선택됨" : L"선택 안됨");
-	TRACE(msg + L"\n");
+	msg.Format(__T("설정 버튼 클릭 - 선택 상태: %s"), m_btnSettings.IsSelected() ? _T("선택됨") : _T("선택 안됨"));
+	TRACE(msg + __T("\n"));
 }
 
 void CMainDialog::OnSettingsButtonTrigger()
 {
 	// 설정 버튼 더블클릭 시 (트리거)
-	AfxMessageBox(L"설정 열기!");
-	TRACE(L"설정 버튼 더블클릭 - 설정 열기\n");
+	AfxMessageBox(_T("설정 열기!"));
+	TRACE(_T("설정 버튼 더블클릭 - 설정 열기\n"));
 }
 
 void CMainDialog::OnLButtonUp(UINT nFlags, CPoint point)
@@ -638,13 +666,13 @@ void CMainDialog::SpawnFrenzyDialog()
         x += rect.left;
         y += rect.top;
 
-        TRACE(L"Spawning Frenzy Dialog at Screen (%d, %d)\n", x, y);
+        TRACE(_T("Spawning Frenzy Dialog at Screen (%d, %d)\n"), x, y);
 
         m_pFrenzyDialog->SetWindowPos(&CWnd::wndTop, x, y, 0, 0, SWP_NOSIZE | SWP_SHOWWINDOW);
         m_pFrenzyDialog->SetTimer(1, 13000, nullptr); // Reset disappear timer
     }
     else
     {
-        TRACE(L"Failed to spawn Frenzy Dialog: Invalid pointer or HWND\n");
+        TRACE(_T("Failed to spawn Frenzy Dialog: Invalid pointer or HWND\n"));
     }
 }

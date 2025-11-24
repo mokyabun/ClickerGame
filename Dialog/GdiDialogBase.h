@@ -1,13 +1,13 @@
-#pragma once
+﻿#pragma once
 #include "afxdialogex.h"
 #include "GdiButton.h"
 #include <vector>
 #include <gdiplus.h>
 
-// GDI+ 렌더링을 위한 다이얼로그 베이스 클래스
-// 1. CDialogEx를 상속
-// 2. SetTimer을 사용해서 1초에 60번 Draw (16ms 간격)
-// 3. 그리는 순서에 따라 Layer 처리 (childLayers는 없이)
+// GDI+ ë Œë”ë§ì„ ìœ„í•œ ë‹¤ì´ì–¼ë¡œê·¸ ë² ì´ìŠ¤ í´ëž˜ìŠ¤
+// 1. CDialogExë¥¼ ìƒì†
+// 2. SetTimerì„ ì‚¬ìš©í•´ì„œ 1ì´ˆì— 60ë²ˆ Draw (16ms ê°„ê²©)
+// 3. ê·¸ë¦¬ëŠ” ìˆœì„œì— ë”°ë¼ Layer ì²˜ë¦¬ (childLayersëŠ” ì—†ì´)
 
 class GdiDialogBase : public CDialogEx
 {
@@ -18,45 +18,45 @@ public:
 	virtual ~GdiDialogBase();
 
 protected:
-	// 파생 클래스에서 재정의할 가상 함수들
+	// íŒŒìƒ í´ëž˜ìŠ¤ì—ì„œ ìž¬ì •ì˜í•  ê°€ìƒ í•¨ìˆ˜ë“¤
 	
-	// 초기화 시 호출 (다이얼로그 크기, 윈도우 스타일 설정 등)
+	// ì´ˆê¸°í™” ì‹œ í˜¸ì¶œ (ë‹¤ì´ì–¼ë¡œê·¸ í¬ê¸°, ìœˆë„ìš° ìŠ¤íƒ€ì¼ ì„¤ì • ë“±)
 	virtual void OnGdiInitialize() {}
 	
-	// 메인 렌더링 함수 - 파생 클래스에서 실제 그리기 내용 구현
-	// graphics: GDI+ 그리기 객체
-	// deltaTime: 이전 프레임과의 시간차 (초 단위)
+	// ë©”ì¸ ë Œë”ë§ í•¨ìˆ˜ - íŒŒìƒ í´ëž˜ìŠ¤ì—ì„œ ì‹¤ì œ ê·¸ë¦¬ê¸° ë‚´ìš© êµ¬í˜„
+	// graphics: GDI+ ê·¸ë¦¬ê¸° ê°ì²´
+	// deltaTime: ì´ì „ í”„ë ˆìž„ê³¼ì˜ ì‹œê°„ì°¨ (ì´ˆ ë‹¨ìœ„)
 	virtual void OnRenderContent(Gdiplus::Graphics& graphics, float deltaTime) = 0;
 	
-	// 업데이트 로직 (렌더링 전에 호출됨)
+	// ì—…ë°ì´íŠ¸ ë¡œì§ (ë Œë”ë§ ì „ì— í˜¸ì¶œë¨)
 	virtual void OnUpdateLogic(float deltaTime) {}
 
-	// 메모리 DC 및 비트맵 초기화
+	// ë©”ëª¨ë¦¬ DC ë° ë¹„íŠ¸ë§µ ì´ˆê¸°í™”
 	void InitializeRenderBuffer(int width, int height);
 
-	// MFC 가상 함수
+	// MFC ê°€ìƒ í•¨ìˆ˜
 	virtual BOOL OnInitDialog() override;
 	virtual void DoDataExchange(CDataExchange* pDX) override;
 
 	DECLARE_MESSAGE_MAP()
 
-	// 메시지 핸들러
+	// ë©”ì‹œì§€ í•¸ë“¤ëŸ¬
 	afx_msg void OnPaint();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnDestroy();
 
 private:
-	// 렌더링 버퍼
-	CDC m_memDC;              // 메모리 DC
-	CBitmap m_memBitmap;      // 메모리 비트맵
-	int m_bufferWidth;        // 버퍼 너비
-	int m_bufferHeight;       // 버퍼 높이
+	// ë Œë”ë§ ë²„í¼
+	CDC m_memDC;              // ë©”ëª¨ë¦¬ DC
+	CBitmap m_memBitmap;      // ë©”ëª¨ë¦¬ ë¹„íŠ¸ë§µ
+	int m_bufferWidth;        // ë²„í¼ ë„ˆë¹„
+	int m_bufferHeight;       // ë²„í¼ ë†’ì´
 	
-	// 타이머
-	UINT_PTR m_nTimerID;      // 60 FPS 타이머 (16ms)
-	DWORD m_lastFrameTime;    // 마지막 프레임 시간 (deltaTime 계산용)
+	// íƒ€ì´ë¨¸
+	UINT_PTR m_nTimerID;      // 60 FPS íƒ€ì´ë¨¸ (16ms)
+	DWORD m_lastFrameTime;    // ë§ˆì§€ë§‰ í”„ë ˆìž„ ì‹œê°„ (deltaTime ê³„ì‚°ìš©)
 	
-	// 렌더링 함수
+	// ë Œë”ë§ í•¨ìˆ˜
 	void RenderFrame();
 };

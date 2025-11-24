@@ -1,4 +1,4 @@
-// GdiDialogBase.cpp: 구현 파일
+﻿// GdiDialogBase.cpp: êµ¬í˜„ íŒŒì¼
 //
 
 #include "pch.h"
@@ -17,7 +17,7 @@ GdiDialogBase::GdiDialogBase(UINT nIDTemplate, CWnd* pParent /*=nullptr*/)
 
 GdiDialogBase::~GdiDialogBase()
 {
-	// 버퍼 정리
+	// ë²„í¼ ì •ë¦¬
 	if (m_memBitmap.GetSafeHandle())
 		m_memBitmap.DeleteObject();
 	if (m_memDC.GetSafeHdc())
@@ -33,10 +33,10 @@ BOOL GdiDialogBase::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// 파생 클래스 초기화 호출
+	// íŒŒìƒ í´ëž˜ìŠ¤ ì´ˆê¸°í™” í˜¸ì¶œ
 	OnGdiInitialize();
 
-	// 60 FPS 타이머 시작 (16ms)
+	// 60 FPS íƒ€ì´ë¨¸ ì‹œìž‘ (16ms)
 	m_nTimerID = SetTimer(1, 16, nullptr);
 	m_lastFrameTime = GetTickCount();
 
@@ -50,7 +50,7 @@ BEGIN_MESSAGE_MAP(GdiDialogBase, CDialogEx)
 	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
-// GdiDialogBase 메시지 처리기
+// GdiDialogBase ë©”ì‹œì§€ ì²˜ë¦¬ê¸°
 
 
 
@@ -59,13 +59,13 @@ void GdiDialogBase::InitializeRenderBuffer(int width, int height)
 	m_bufferWidth = width;
 	m_bufferHeight = height;
 
-	// 기존 버퍼 정리
+	// ê¸°ì¡´ ë²„í¼ ì •ë¦¬
 	if (m_memBitmap.GetSafeHandle())
 		m_memBitmap.DeleteObject();
 	if (m_memDC.GetSafeHdc())
 		m_memDC.DeleteDC();
 
-	// 새 버퍼 생성
+	// ìƒˆ ë²„í¼ ìƒì„±
 	CClientDC dc(this);
 	m_memDC.CreateCompatibleDC(&dc);
 	m_memBitmap.CreateCompatibleBitmap(&dc, width, height);
@@ -74,7 +74,7 @@ void GdiDialogBase::InitializeRenderBuffer(int width, int height)
 
 BOOL GdiDialogBase::OnEraseBkgnd(CDC* pDC)
 {
-	// 깜박임 방지
+	// ê¹œë°•ìž„ ë°©ì§€
 	return TRUE;
 }
 
@@ -82,7 +82,7 @@ void GdiDialogBase::OnPaint()
 {
 	CPaintDC dc(this);
 
-	// 중앙 렌더링 버퍼를 화면에 복사만 수행
+	// ì¤‘ì•™ ë Œë”ë§ ë²„í¼ë¥¼ í™”ë©´ì— ë³µì‚¬ë§Œ ìˆ˜í–‰
 	if (m_memDC.GetSafeHdc() && m_bufferWidth > 0 && m_bufferHeight > 0)
 	{
 		dc.BitBlt(0, 0, m_bufferWidth, m_bufferHeight, &m_memDC, 0, 0, SRCCOPY);
@@ -115,27 +115,27 @@ void GdiDialogBase::RenderFrame()
 	if (!m_memDC.GetSafeHdc() || m_bufferWidth == 0 || m_bufferHeight == 0)
 		return;
 
-	// deltaTime 계산 (초 단위)
+	// deltaTime ê³„ì‚° (ì´ˆ ë‹¨ìœ„)
 	DWORD currentTime = GetTickCount();
 	float deltaTime = (currentTime - m_lastFrameTime) / 1000.0f;
 	m_lastFrameTime = currentTime;
 
-	// 업데이트 로직 호출
+	// ì—…ë°ì´íŠ¸ ë¡œì§ í˜¸ì¶œ
 	OnUpdateLogic(deltaTime);
 
-	// 투명 키 색상으로 배경 채우기 (RGB(255, 0, 255) 마젠타)
+	// íˆ¬ëª… í‚¤ ìƒ‰ìƒìœ¼ë¡œ ë°°ê²½ ì±„ìš°ê¸° (RGB(255, 0, 255) ë§ˆì  íƒ€)
 	m_memDC.FillSolidRect(0, 0, m_bufferWidth, m_bufferHeight, RGB(255, 0, 255));
 
-	// GDI+ Graphics 생성
+	// GDI+ Graphics ìƒì„±
 	Gdiplus::Graphics graphics(m_memDC.GetSafeHdc());
 	graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
 	graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
 	graphics.SetTextRenderingHint(Gdiplus::TextRenderingHintAntiAlias);
 	graphics.SetCompositingMode(Gdiplus::CompositingModeSourceOver);
 
-	// 파생 클래스의 렌더링 호출
+	// íŒŒìƒ í´ëž˜ìŠ¤ì˜ ë Œë”ë§ í˜¸ì¶œ
 	OnRenderContent(graphics, deltaTime);
 
-	// 화면 갱신
+	// í™”ë©´ ê°±ì‹ 
 	InvalidateRect(nullptr, FALSE);
 }

@@ -1,11 +1,11 @@
-
-// ClickerGameView.cpp: CClickerGameView 클래스의 구현
+﻿
+// ClickerGameView.cpp: CClickerGameView í´ëž˜ìŠ¤ì˜ êµ¬í˜„
 //
 
 #include "pch.h"
 #include "framework.h"
-// SHARED_HANDLERS는 미리 보기, 축소판 그림 및 검색 필터 처리기를 구현하는 ATL 프로젝트에서 정의할 수 있으며
-// 해당 프로젝트와 문서 코드를 공유하도록 해 줍니다.
+// SHARED_HANDLERSëŠ” ë¯¸ë¦¬ ë³´ê¸°, ì¶•ì†ŒíŒ ê·¸ë¦¼ ë° ê²€ìƒ‰ í•„í„° ì²˜ë¦¬ê¸°ë¥¼ êµ¬í˜„í•˜ëŠ” ATL í”„ë¡œì íŠ¸ì—ì„œ ì •ì˜í•  ìˆ˜ ìžˆìœ¼ë©°
+// í•´ë‹¹ í”„ë¡œì íŠ¸ì™€ ë¬¸ì„œ ì½”ë“œë¥¼ ê³µìœ í•˜ë„ë¡ í•´ ì¤ë‹ˆë‹¤.
 #ifndef SHARED_HANDLERS
 #include "ClickerGame.h"
 #endif
@@ -25,11 +25,11 @@ IMPLEMENT_DYNCREATE(CClickerGameView, CView)
 BEGIN_MESSAGE_MAP(CClickerGameView, CView)
 END_MESSAGE_MAP()
 
-// CClickerGameView 생성/소멸
+// CClickerGameView ìƒì„±/ì†Œë©¸
 
 CClickerGameView::CClickerGameView() noexcept
 {
-	// TODO: 여기에 생성 코드를 추가합니다.
+	// TODO: ì—¬ê¸°ì— ìƒì„± ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 }
 
@@ -39,13 +39,13 @@ CClickerGameView::~CClickerGameView()
 
 BOOL CClickerGameView::PreCreateWindow(CREATESTRUCT& cs)
 {
-	// TODO: CREATESTRUCT cs를 수정하여 여기에서
-	//  Window 클래스 또는 스타일을 수정합니다.
+	// TODO: CREATESTRUCT csë¥¼ ìˆ˜ì •í•˜ì—¬ ì—¬ê¸°ì—ì„œ
+	//  Window í´ëž˜ìŠ¤ ë˜ëŠ” ìŠ¤íƒ€ì¼ì„ ìˆ˜ì •í•©ë‹ˆë‹¤.
 
 	return CView::PreCreateWindow(cs);
 }
 
-// CClickerGameView 그리기
+// CClickerGameView ê·¸ë¦¬ê¸°
 
 void CClickerGameView::OnDraw(CDC* /*pDC*/)
 {
@@ -54,11 +54,11 @@ void CClickerGameView::OnDraw(CDC* /*pDC*/)
 	if (!pDoc)
 		return;
 
-	// TODO: 여기에 원시 데이터에 대한 그리기 코드를 추가합니다.
+	// TODO: ì—¬ê¸°ì— ì›ì‹œ ë°ì´í„°ì— ëŒ€í•œ ê·¸ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 }
 
 
-// CClickerGameView 진단
+// CClickerGameView ì§„ë‹¨
 
 #ifdef _DEBUG
 void CClickerGameView::AssertValid() const
@@ -71,7 +71,7 @@ void CClickerGameView::Dump(CDumpContext& dc) const
 	CView::Dump(dc);
 }
 
-CClickerGameDoc* CClickerGameView::GetDocument() const // 디버그되지 않은 버전은 인라인으로 지정됩니다.
+CClickerGameDoc* CClickerGameView::GetDocument() const // ë””ë²„ê·¸ë˜ì§€ ì•Šì€ ë²„ì „ì€ ì¸ë¼ì¸ìœ¼ë¡œ ì§€ì •ë©ë‹ˆë‹¤.
 {
 	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CClickerGameDoc)));
 	return (CClickerGameDoc*)m_pDocument;
@@ -79,4 +79,4 @@ CClickerGameDoc* CClickerGameView::GetDocument() const // 디버그되지 않은
 #endif //_DEBUG
 
 
-// CClickerGameView 메시지 처리기
+// CClickerGameView ë©”ì‹œì§€ ì²˜ë¦¬ê¸°

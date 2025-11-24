@@ -4,15 +4,11 @@
 
 #include "pch.h"
 #include "framework.h"
-// SHARED_HANDLERS는 미리 보기, 축소판 그림 및 검색 필터 처리기를 구현하는 ATL 프로젝트에서 정의할 수 있으며
-// 해당 프로젝트와 문서 코드를 공유하도록 해 줍니다.
 #ifndef SHARED_HANDLERS
 #include "ClickerGame.h"
 #endif
 
 #include "ClickerGameDoc.h"
-
-#include <propkey.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -30,8 +26,6 @@ END_MESSAGE_MAP()
 
 CClickerGameDoc::CClickerGameDoc() noexcept
 {
-	// TODO: 여기에 일회성 생성 코드를 추가합니다.
-
 }
 
 CClickerGameDoc::~CClickerGameDoc()
@@ -49,8 +43,130 @@ BOOL CClickerGameDoc::OnNewDocument()
 	return TRUE;
 }
 
+// CClickerGameDoc serialization helpers
 
+CString CClickerGameDoc::SerializeGameState(const GameState& state) const {
+    CString data;
+    data = _T("GAMESTATE\n");
+    
+    // 기본 게임 상태 저장
+    CString line;
+    line.Format(_T("TOTAL_CLICKS=%.2f\n"), state.GetTotalClicks());
+    data += line;
+    
+    line.Format(_T("CLICK_POWER=%.2f\n"), state.GetClickPower());
+    data += line;
+    
+    // 업그레이드 데이터 저장
+    data += _T("UPGRADES_START\n");
+    const auto& upgrades = state.GetUpgrades();
+    for (const auto& upgrade : upgrades) {
+        line.Format(_T("%d:%d\n"), upgrade.id, upgrade.owned);
+        data += line;
+    }
+    data += _T("UPGRADES_END\n");
+    
+    // 특별 업그레이드 데이터 저장
+    data += _T("SPECIAL_UPGRADES_START\n");
+    const auto& specialUpgrades = state.GetSpecialUpgrades();
+    for (const auto& specialUpgrade : specialUpgrades) {
+        if (specialUpgrade.isPurchased) {
+            line.Format(_T("%d:1\n"), specialUpgrade.id);
+            data += line;
+        }
+    }
+    data += _T("SPECIAL_UPGRADES_END\n");
+    
+    return data;
+}
 
+void CClickerGameDoc::DeserializeGameState(GameState& state, const CString& data) const {
+    // 라인 단위로 파싱
+    int pos = 0;
+    bool inUpgrades = false;
+    bool inSpecialUpgrades = false;
+    
+    while (pos < data.GetLength()) {
+        // 다음 줄바꿈 찾기
+        int newlinePos = data.Find(_T('\n'), pos);
+        if (newlinePos < 0) {
+            newlinePos = data.GetLength();
+        }
+        
+        // 현재 라인 추출
+        CString line = data.Mid(pos, newlinePos - pos);
+        line.Trim();
+        
+        if (!line.IsEmpty()) {
+            if (line == _T("UPGRADES_START")) {
+                inUpgrades = true;
+                inSpecialUpgrades = false;
+            }
+            else if (line == _T("UPGRADES_END")) {
+                inUpgrades = false;
+            }
+            else if (line == _T("SPECIAL_UPGRADES_START")) {
+                inSpecialUpgrades = true;
+                inUpgrades = false;
+            }
+            else if (line == _T("SPECIAL_UPGRADES_END")) {
+                inSpecialUpgrades = false;
+            }
+            else if (inUpgrades) {
+                // 업그레이드 데이터 파싱: id:owned
+                int colonPos = line.Find(_T(':'));
+                if (colonPos > 0) {
+                    CString idStr = line.Left(colonPos);
+                    CString ownedStr = line.Mid(colonPos + 1);
+                    idStr.Trim();
+                    ownedStr.Trim();
+                    
+                    int id = _wtoi(idStr);
+                    int owned = _wtoi(ownedStr);
+                    
+                    auto& upgrades = state.GetUpgrades();
+                    if (id >= 0 && id < static_cast<int>(upgrades.size())) {
+                        upgrades[id].owned = owned;
+                    }
+                }
+            }
+            else if (inSpecialUpgrades) {
+                // 특별 업그레이드 데이터 파싱: id:1
+                int colonPos = line.Find(_T(':'));
+                if (colonPos > 0) {
+                    CString idStr = line.Left(colonPos);
+                    idStr.Trim();
+                    
+                    int id = _wtoi(idStr);
+                    
+                    auto& specialUpgrades = state.GetSpecialUpgrades();
+                    if (id >= 0 && id < static_cast<int>(specialUpgrades.size())) {
+                        specialUpgrades[id].isPurchased = true;
+                    }
+                }
+            }
+            else {
+                // 키=값 형식 파싱
+                int equalPos = line.Find(_T('='));
+                if (equalPos > 0) {
+                    CString key = line.Left(equalPos);
+                    CString value = line.Mid(equalPos + 1);
+                    key.Trim();
+                    value.Trim();
+                    
+                    if (key == _T("TOTAL_CLICKS")) {
+                        state.SetTotalClicks(_wtof(value));
+                    }
+                    else if (key == _T("CLICK_POWER")) {
+                        state.SetClickPower(_wtof(value));
+                    }
+                }
+            }
+        }
+        
+        pos = newlinePos + 1;
+    }
+}
 
 // CClickerGameDoc serialization
 
@@ -58,175 +174,32 @@ void CClickerGameDoc::Serialize(CArchive& ar)
 {
 	if (ar.IsStoring())
 	{
-		// JSON으로 직렬화하여 저장
-		CString json = m_gameCore.GetState().ToJson();
+		// 커스텀 포맷으로 직렬화하여 저장
+		CString data = SerializeGameState(m_gameCore.GetState());
 		
 		// CString을 UTF-16으로 저장
-		int len = json.GetLength();
+		int len = data.GetLength();
 		ar << len;
-		ar.WriteString(json);
+		ar.WriteString(data);
 	}
 	else
 	{
-		// JSON 역직렬화하여 로드
+		// 커스텀 포맷 역직렬화하여 로드
 		int len = 0;
 		ar >> len;
 		
 		if (len > 0 && len < 1000000) // 안전성 체크 (1MB 미만)
 		{
-			CString json;
-			TCHAR* buffer = json.GetBuffer(len + 1);
+			CString data;
+			TCHAR* buffer = data.GetBuffer(len + 1);
 			ar.Read(buffer, len * sizeof(TCHAR));
 			buffer[len] = L'\0';
-			json.ReleaseBuffer();
+			data.ReleaseBuffer();
 			
-			m_gameCore.GetState().FromJson(json);
+			DeserializeGameState(m_gameCore.GetState(), data);
 		}
 	}
 }
-
-BOOL CClickerGameDoc::SaveToFile(const CString& filePath)
-{
-	try
-	{
-		// JSON 문자열 생성
-		CString json = m_gameCore.GetState().ToJson();
-		
-		// 파일에 쓰기 (UTF-8 BOM)
-		CFile file;
-		if (file.Open(filePath, CFile::modeCreate | CFile::modeWrite))
-		{
-			// UTF-8 BOM 쓰기
-			unsigned char bom[3] = { 0xEF, 0xBB, 0xBF };
-			file.Write(bom, 3);
-			
-			// UTF-16 -> UTF-8 변환
-			int utf8Len = WideCharToMultiByte(CP_UTF8, 0, json, -1, NULL, 0, NULL, NULL);
-			if (utf8Len > 0)
-			{
-				char* utf8Buffer = new char[utf8Len];
-				WideCharToMultiByte(CP_UTF8, 0, json, -1, utf8Buffer, utf8Len, NULL, NULL);
-				file.Write(utf8Buffer, utf8Len - 1); // null terminator 제외
-				delete[] utf8Buffer;
-			}
-			
-			file.Close();
-			return TRUE;
-		}
-	}
-	catch (CFileException* e)
-	{
-		e->Delete();
-	}
-	
-	return FALSE;
-}
-
-BOOL CClickerGameDoc::LoadFromFile(const CString& filePath)
-{
-	try
-	{
-		CFile file;
-		if (file.Open(filePath, CFile::modeRead))
-		{
-			ULONGLONG fileSize = file.GetLength();
-			if (fileSize > 0 && fileSize < 1000000) // 1MB 미만
-			{
-				// 파일 읽기
-				char* buffer = new char[(size_t)fileSize + 1];
-				file.Read(buffer, (UINT)fileSize);
-				buffer[fileSize] = '\0';
-				file.Close();
-				
-				// UTF-8 BOM 스킵
-				char* jsonStart = buffer;
-				if (fileSize >= 3 && 
-					(unsigned char)buffer[0] == 0xEF && 
-					(unsigned char)buffer[1] == 0xBB && 
-					(unsigned char)buffer[2] == 0xBF)
-				{
-					jsonStart += 3;
-				}
-				
-				// UTF-8 -> UTF-16 변환
-				int wideLen = MultiByteToWideChar(CP_UTF8, 0, jsonStart, -1, NULL, 0);
-				if (wideLen > 0)
-				{
-					WCHAR* wideBuffer = new WCHAR[wideLen];
-					MultiByteToWideChar(CP_UTF8, 0, jsonStart, -1, wideBuffer, wideLen);
-					
-					CString json(wideBuffer);
-					m_gameCore.GetState().FromJson(json);
-					
-					delete[] wideBuffer;
-				}
-				
-				delete[] buffer;
-				return TRUE;
-			}
-		}
-	}
-	catch (CFileException* e)
-	{
-		e->Delete();
-	}
-	
-	return FALSE;
-}
-
-#ifdef SHARED_HANDLERS
-
-// 축소판 그림을 지원합니다.
-void CClickerGameDoc::OnDrawThumbnail(CDC& dc, LPRECT lprcBounds)
-{
-	// 문서의 데이터를 그리려면 이 코드를 수정하십시오.
-	dc.FillSolidRect(lprcBounds, RGB(255, 255, 255));
-
-	CString strText = _T("TODO: implement thumbnail drawing here");
-	LOGFONT lf;
-
-	CFont* pDefaultGUIFont = CFont::FromHandle((HFONT) GetStockObject(DEFAULT_GUI_FONT));
-	pDefaultGUIFont->GetLogFont(&lf);
-	lf.lfHeight = 36;
-
-	CFont fontDraw;
-	fontDraw.CreateFontIndirect(&lf);
-
-	CFont* pOldFont = dc.SelectObject(&fontDraw);
-	dc.DrawText(strText, lprcBounds, DT_CENTER | DT_WORDBREAK);
-	dc.SelectObject(pOldFont);
-}
-
-// 검색 처리기를 지원합니다.
-void CClickerGameDoc::InitializeSearchContent()
-{
-	CString strSearchContent;
-	// 문서의 데이터에서 검색 콘텐츠를 설정합니다.
-	// 콘텐츠 부분은 ";"로 구분되어야 합니다.
-
-	// 예: strSearchContent = _T("point;rectangle;circle;ole object;");
-	SetSearchContent(strSearchContent);
-}
-
-void CClickerGameDoc::SetSearchContent(const CString& value)
-{
-	if (value.IsEmpty())
-	{
-		RemoveChunk(PKEY_Search_Contents.fmtid, PKEY_Search_Contents.pid);
-	}
-	else
-	{
-		CMFCFilterChunkValueImpl *pChunk = nullptr;
-		ATLTRY(pChunk = new CMFCFilterChunkValueImpl);
-		if (pChunk != nullptr)
-		{
-			pChunk->SetTextValue(PKEY_Search_Contents, value, CHUNK_TEXT);
-			SetChunkValue(pChunk);
-		}
-	}
-}
-
-#endif // SHARED_HANDLERS
 
 // CClickerGameDoc 진단
 
@@ -241,6 +214,3 @@ void CClickerGameDoc::Dump(CDumpContext& dc) const
 	CDocument::Dump(dc);
 }
 #endif //_DEBUG
-
-
-// CClickerGameDoc 명령

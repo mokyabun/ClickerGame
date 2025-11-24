@@ -205,6 +205,7 @@
     <ClInclude Include="Dialog\ShopDialog.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Dialog\UpgradeDialog.h" />
+    <ClInclude Include="Core\SnowfallParticle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FrenzyDialog.cpp" />
@@ -222,6 +223,7 @@
     <ClCompile Include="Dialog\MainDialog.cpp" />
     <ClCompile Include="MFC\MainFrm.cpp" />
     <ClCompile Include="Core\ParticleSystem.cpp" />
+    <ClCompile Include="Core\SnowfallParticle.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

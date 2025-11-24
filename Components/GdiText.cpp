@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "GdiText.h"
 
 GdiText::GdiText()
@@ -11,7 +11,7 @@ GdiText::GdiText()
 	, m_shadowOffsetX(1.0f)
 	, m_shadowOffsetY(1.0f)
 {
-	m_pFont = new Gdiplus::Font(L"Tahoma", 12.0f, Gdiplus::FontStyleRegular);
+	m_pFont = new Gdiplus::Font(_T("Tahoma"), 12.0f, Gdiplus::FontStyleRegular);
 }
 
 GdiText::~GdiText()
@@ -63,10 +63,10 @@ void GdiText::Draw(Gdiplus::Graphics& graphics, const Gdiplus::RectF& rect)
 	format.SetAlignment(m_alignment);
 	format.SetLineAlignment(m_lineAlignment);
 
-	// 사각형 영역에 그릴 때는 왼쪽 위 점을 기준으로
+	// ì‚¬ê°í˜• ì˜ì—­ì— ê·¸ë¦´ ë•ŒëŠ” ì™¼ìª½ ìœ„ ì ì„ ê¸°ì¤€ìœ¼ë¡œ
 	Gdiplus::PointF point(rect.X, rect.Y);
 	
-	// 중앙 정렬이면 사각형 중심으로
+	// ì¤‘ì•™ ì •ë ¬ì´ë©´ ì‚¬ê°í˜• ì¤‘ì‹¬ìœ¼ë¡œ
 	if (m_alignment == Gdiplus::StringAlignmentCenter)
 	{
 		point.X = rect.X + rect.Width / 2.0f;
@@ -97,7 +97,7 @@ void GdiText::DrawWithShadow(Gdiplus::Graphics& graphics, const Gdiplus::PointF&
 	{
 	case ShadowStyle::DropShadow:
 	{
-		// 드롭 섀도우: 오른쪽 아래에 그림자
+		// ë“œë¡­ ì„€ë„ìš°: ì˜¤ë¥¸ìª½ ì•„ëž˜ì— ê·¸ë¦¼ìž
 		Gdiplus::PointF shadowPoint(point.X + m_shadowOffsetX, point.Y + m_shadowOffsetY);
 		graphics.DrawString(m_text, -1, m_pFont, shadowPoint, format, &shadowBrush);
 		break;
@@ -105,7 +105,7 @@ void GdiText::DrawWithShadow(Gdiplus::Graphics& graphics, const Gdiplus::PointF&
 
 	case ShadowStyle::Outline:
 	{
-		// 외곽선: 4방향에 그림자
+		// ì™¸ê³½ì„ : 4ë°©í–¥ì— ê·¸ë¦¼ìž
 		graphics.DrawString(m_text, -1, m_pFont, Gdiplus::PointF(point.X - m_shadowOffsetX, point.Y), format, &shadowBrush);
 		graphics.DrawString(m_text, -1, m_pFont, Gdiplus::PointF(point.X + m_shadowOffsetX, point.Y), format, &shadowBrush);
 		graphics.DrawString(m_text, -1, m_pFont, Gdiplus::PointF(point.X, point.Y - m_shadowOffsetY), format, &shadowBrush);
@@ -115,10 +115,10 @@ void GdiText::DrawWithShadow(Gdiplus::Graphics& graphics, const Gdiplus::PointF&
 
 	case ShadowStyle::None:
 	default:
-		// 그림자 없음
+		// ê·¸ë¦¼ìž ì—†ìŒ
 		break;
 	}
 
-	// 실제 텍스트 그리기
+	// ì‹¤ì œ í…ìŠ¤íŠ¸ ê·¸ë¦¬ê¸°
 	graphics.DrawString(m_text, -1, m_pFont, point, format, &textBrush);
 }

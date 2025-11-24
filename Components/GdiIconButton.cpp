@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "GdiIconButton.h"
 #include "PathResolver.h"
 
@@ -28,12 +28,12 @@ END_MESSAGE_MAP()
 
 BOOL CGdiIconButton::Create(const CString& caption, const CRect& rect, CWnd* pParentWnd, UINT nID)
 {
-	// 부모 클래스의 Create 호출
+	// ë¶€ëª¨ í´ëž˜ìŠ¤ì˜ Create í˜¸ì¶œ
 	BOOL result = CGdiButton::Create(caption, rect, pParentWnd, nID);
 	
 	if (result)
 	{
-		// 더블클릭을 받을 수 있도록 스타일 추가
+		// ë”ë¸”í´ë¦­ì„ ë°›ì„ ìˆ˜ ìžˆë„ë¡ ìŠ¤íƒ€ì¼ ì¶”ê°€
 		ModifyStyle(0, BS_NOTIFY);
 	}
 	
@@ -55,7 +55,7 @@ void CGdiIconButton::SetIconImage(const CString& iconImagePath)
 	if (m_pIconImage == nullptr || m_pIconImage->GetLastStatus() != Gdiplus::Ok)
 	{
 		CString msg;
-		msg.Format(L"아이콘 이미지를 로드할 수 없습니다!\n경로: %s", fullPath);
+		msg.Format(_T("ì•„ì´ì½˜ ì´ë¯¸ì§€ë¥¼ ë¡œë“œí•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤!\nê²½ë¡œ: %s"), fullPath);
 		AfxMessageBox(msg);
 	}
 
@@ -78,11 +78,11 @@ void CGdiIconButton::SetIconImageFromPath(Gdiplus::Image* pIconImage)
 void CGdiIconButton::SetName(const CString& name)
 {
 	m_name = name;
-	// GdiText에도 설정 (그림자 효과 등을 위해)
+	// GdiTextì—ë„ ì„¤ì • (ê·¸ë¦¼ìž íš¨ê³¼ ë“±ì„ ìœ„í•´)
 	m_gdiText.SetText(name);
 	m_gdiText.SetAlignment(Gdiplus::StringAlignmentCenter);
 	m_gdiText.SetLineAlignment(Gdiplus::StringAlignmentNear);
-	m_gdiText.SetShadowStyle(GdiText::ShadowStyle::DropShadow); // 아이콘 버튼은 기본적으로 그림자 적용
+	m_gdiText.SetShadowStyle(GdiText::ShadowStyle::DropShadow); // ì•„ì´ì½˜ ë²„íŠ¼ì€ ê¸°ë³¸ì ìœ¼ë¡œ ê·¸ë¦¼ìž ì ìš©
 	
 	Invalidate();
 }
@@ -103,56 +103,56 @@ void CGdiIconButton::DrawButton(Gdiplus::Graphics& graphics, const CRect& rect)
 	if (!m_pIconImage)
 		return;
 
-	// 아이콘 영역 (48x48)
+	// ì•„ì´ì½˜ ì˜ì—­ (48x48)
 	const int iconWidth = 48;
 	const int iconHeight = 48;
 	
-	// 아이콘을 중앙 상단에 그리기
+	// ì•„ì´ì½˜ì„ ì¤‘ì•™ ìƒë‹¨ì— ê·¸ë¦¬ê¸°
 	int iconX = rect.left + (rect.Width() - iconWidth) / 2;
-	int iconY = rect.top + 5;  // 위에서 5px 떨어진 위치
+	int iconY = rect.top + 5;  // ìœ„ì—ì„œ 5px ë–¨ì–´ì§„ ìœ„ì¹˜
 
-	// 선택 상태일 때 전체 버튼 영역에 파란색 배경 그리기 (Windows 스타일)
+	// ì„ íƒ ìƒíƒœì¼ ë•Œ ì „ì²´ ë²„íŠ¼ ì˜ì—­ì— íŒŒëž€ìƒ‰ ë°°ê²½ ê·¸ë¦¬ê¸° (Windows ìŠ¤íƒ€ì¼)
 	if (m_bSelected)
 	{
-		Gdiplus::SolidBrush selectionBrush(Gdiplus::Color(100, 51, 153, 255)); // 반투명 파란색
+		Gdiplus::SolidBrush selectionBrush(Gdiplus::Color(100, 51, 153, 255)); // ë°˜íˆ¬ëª… íŒŒëž€ìƒ‰
 		Gdiplus::RectF selectionRect((Gdiplus::REAL)rect.left, (Gdiplus::REAL)rect.top, 
 			(Gdiplus::REAL)rect.Width(), (Gdiplus::REAL)rect.Height());
 		graphics.FillRectangle(&selectionBrush, selectionRect);
 	}
 
-	// 단일 이미지 전체를 그리기
+	// ë‹¨ì¼ ì´ë¯¸ì§€ ì „ì²´ë¥¼ ê·¸ë¦¬ê¸°
 	Gdiplus::RectF destRect((Gdiplus::REAL)iconX, (Gdiplus::REAL)iconY, 
 		(Gdiplus::REAL)iconWidth, (Gdiplus::REAL)iconHeight);
 
 	graphics.DrawImage(m_pIconImage, destRect);
 
-	// 텍스트 그리기 (아이콘 아래)
+	// í…ìŠ¤íŠ¸ ê·¸ë¦¬ê¸° (ì•„ì´ì½˜ ì•„ëž˜)
 	if (!m_name.IsEmpty())
 	{
-		// 텍스트 영역 계산
+		// í…ìŠ¤íŠ¸ ì˜ì—­ ê³„ì‚°
 		Gdiplus::RectF textRect((Gdiplus::REAL)rect.left, 
 			(Gdiplus::REAL)(iconY + iconHeight + 2),
 			(Gdiplus::REAL)rect.Width(), 
 			(Gdiplus::REAL)(rect.Height() - (iconY - rect.top) - iconHeight - 2));
 
-		// GdiText를 사용하여 그리기 (그림자 효과 자동 적용)
+		// GdiTextë¥¼ ì‚¬ìš©í•˜ì—¬ ê·¸ë¦¬ê¸° (ê·¸ë¦¼ìž íš¨ê³¼ ìžë™ ì ìš©)
 		m_gdiText.Draw(graphics, textRect);
 	}
 }
 
 void CGdiIconButton::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	// 한 번 클릭 시 선택 토글
+	// í•œ ë²ˆ í´ë¦­ ì‹œ ì„ íƒ í† ê¸€
 	m_bSelected = !m_bSelected;
 	Invalidate();
 
-	// 부모 클래스의 OnClick 콜백도 호출
+	// ë¶€ëª¨ í´ëž˜ìŠ¤ì˜ OnClick ì½œë°±ë„ í˜¸ì¶œ
 	CGdiButton::OnLButtonDown(nFlags, point);
 }
 
 void CGdiIconButton::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
-	// 더블클릭 시 트리거 콜백 호출
+	// ë”ë¸”í´ë¦­ ì‹œ íŠ¸ë¦¬ê±° ì½œë°± í˜¸ì¶œ
 	if (m_onTriggerCallback)
 	{
 		m_onTriggerCallback();

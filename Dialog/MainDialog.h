@@ -5,6 +5,7 @@
 #include "ClickerButton.h"
 #include "GameCore.h"
 #include "ParticleSystem.h"
+#include "SnowfallParticle.h"
 #include "FrenzyDialog.h"
 #include <vector>
 
@@ -50,6 +51,7 @@ private:
 	// 텍스트 객체
 	GdiText m_titleText;    // "Windows XP"
 	GdiText m_currencyText; // "0 ZPC"
+	GdiText m_productionText; // "초당 X ZPC"
 	GdiText m_startText;    // "시작"
 	GdiText m_clockText;    // 시계
 	
@@ -72,6 +74,7 @@ private:
 	
 	// 파티클 시스템
 	ParticleSystem m_particleSystem;
+	SnowfallParticleSystem m_snowfallParticles;
 	
 	// 드래그 관련
 	bool m_bDragging;

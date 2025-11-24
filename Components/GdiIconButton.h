@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "GdiButton.h"
 
 class CGdiIconButton : public CGdiButton

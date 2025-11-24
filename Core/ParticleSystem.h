@@ -1,51 +1,51 @@
-#pragma once
+﻿#pragma once
 #include <vector>
 #include <windows.h>
 #include <gdiplus.h>
 
-// 개별 파티클 구조체
+// ê°œë³„ íŒŒí‹°í´ êµ¬ì¡°ì²´
 struct Particle
 {
-	float x, y;           // 위치
-	float vx, vy;         // 속도
-	float life;           // 생명 (0.0 ~ 1.0)
-	float size;           // 크기
-	float alpha;          // 투명도
-	float angle;          // 회전 각도 (도)
+	float x, y;           // ìœ„ì¹˜
+	float vx, vy;         // ì†ë„
+	float life;           // ìƒëª… (0.0 ~ 1.0)
+	float size;           // í¬ê¸°
+	float alpha;          // íˆ¬ëª…ë„
+	float angle;          // íšŒì „ ê°ë„ (ë„)
 	
 	Particle(float _x, float _y)
 		: x(_x), y(_y)
-		, vx((rand() % 400 - 200) / 10.0f)  // -20 ~ 20 (좌우로 퍼짐)
-		, vy((rand() % 400 - 200) / 10.0f)  // -20 ~ 20 (상하로 퍼짐)
+		, vx((rand() % 400 - 200) / 10.0f)  // -20 ~ 20 (ì¢Œìš°ë¡œ í¼ì§)
+		, vy((rand() % 400 - 200) / 10.0f)  // -20 ~ 20 (ìƒí•˜ë¡œ í¼ì§)
 		, life(1.0f)
-		, size(8.0f + (rand() % 8))  // 8~15 크기
+		, size(8.0f + (rand() % 8))  // 8~15 í¬ê¸°
 		, alpha(255.0f)
-		, angle((float)(rand() % 360))  // 0~360도 랜덤 각도
+		, angle((float)(rand() % 360))  // 0~360ë„ ëžœë¤ ê°ë„
 	{
 	}
 };
 
-// 파티클 시스템 클래스
+// íŒŒí‹°í´ ì‹œìŠ¤í…œ í´ëž˜ìŠ¤
 class ParticleSystem
 {
 public:
 	ParticleSystem();
 	~ParticleSystem();
 
-	// 파티클 방출 (클릭 위치에서)
+	// íŒŒí‹°í´ ë°©ì¶œ (í´ë¦­ ìœ„ì¹˜ì—ì„œ)
 	void Emit(float x, float y, int count = 10);
 	
-	// 업데이트 (deltaTime: 초 단위)
+	// ì—…ë°ì´íŠ¸ (deltaTime: ì´ˆ ë‹¨ìœ„)
 	void Update(float deltaTime);
 	
-	// 렌더링
+	// ë Œë”ë§
 	void Draw(Gdiplus::Graphics& graphics);
 	
-	// 모든 파티클 제거
+	// ëª¨ë“  íŒŒí‹°í´ ì œê±°
 	void Clear();
 
 private:
 	std::vector<Particle> m_particles;
-	const float m_gravity = 500.0f;  // 중력 가속도
-	const float m_fadeSpeed = 1.5f;   // 페이드 아웃 속도
+	const float m_gravity = 500.0f;  // ì¤‘ë ¥ ê°€ì†ë„
+	const float m_fadeSpeed = 1.5f;   // íŽ˜ì´ë“œ ì•„ì›ƒ ì†ë„
 };

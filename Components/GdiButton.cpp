@@ -10,9 +10,9 @@ CGdiButton::CGdiButton()
 	, m_bOwnsImage(false)
 	, m_onClickCallback(nullptr)
 {
-	// GdiText 초기화 (기본값 설정)
+	// GdiText ì´ˆê¸°í™” (ê¸°ë³¸ê°’ ì„¤ì •)
 	m_gdiText.SetColor(Gdiplus::Color(255, 0, 0, 0));
-	m_gdiText.SetFont(L"맑은 고딕", 12.0f, Gdiplus::FontStyleRegular);
+	m_gdiText.SetFont(_T("ë§‘ì€ ê³ ë”•"), 12.0f, Gdiplus::FontStyleRegular);
 	m_gdiText.SetAlignment(Gdiplus::StringAlignmentCenter);
 	m_gdiText.SetLineAlignment(Gdiplus::StringAlignmentCenter);
 }
@@ -37,19 +37,19 @@ END_MESSAGE_MAP()
 
 void CGdiButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
-	// BS_OWNERDRAW 스타일을 위한 필수 메서드
-	// WM_PAINT에서 그리기를 처리하므로 여기서는 아무것도 하지 않음
+	// BS_OWNERDRAW ìŠ¤íƒ€ì¼ì„ ìœ„í•œ í•„ìˆ˜ ë©”ì„œë“œ
+	// WM_PAINTì—ì„œ ê·¸ë¦¬ê¸°ë¥¼ ì²˜ë¦¬í•˜ë¯€ë¡œ ì—¬ê¸°ì„œëŠ” ì•„ë¬´ê²ƒë„ í•˜ì§€ ì•ŠìŒ
 }
 
 BOOL CGdiButton::Create(const CString& caption, const CRect& rect, CWnd* pParentWnd, UINT nID)
 {
-	// BS_OWNERDRAW 스타일로 버튼 생성 (WS_EX_TRANSPARENT 추가)
+	// BS_OWNERDRAW ìŠ¤íƒ€ì¼ë¡œ ë²„íŠ¼ ìƒì„± (WS_EX_TRANSPARENT ì¶”ê°€)
 	BOOL result = CButton::Create(caption, WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
 		rect, pParentWnd, nID);
 	
 	if (result)
 	{
-		// 투명 배경을 위한 확장 스타일 추가
+		// íˆ¬ëª… ë°°ê²½ì„ ìœ„í•œ í™•ìž¥ ìŠ¤íƒ€ì¼ ì¶”ê°€
 		ModifyStyleEx(0, WS_EX_TRANSPARENT);
 		
 		if (caption.IsEmpty() == FALSE)
@@ -88,11 +88,9 @@ void CGdiButton::SetImage(Gdiplus::Image* pImage, bool bOwnsImage)
 	m_bOwnsImage = bOwnsImage;
 }
 
-CGdiButton* CGdiButton::SetText(const CString& text)
+void CGdiButton::SetText(const CString& text)
 {
 	m_gdiText.SetText(text);
-
-	return this;
 }
 
 void CGdiButton::SetTextColor(Gdiplus::Color color)
@@ -130,7 +128,7 @@ void CGdiButton::SetOnClickCallback(OnClickCallback callback)
 
 void CGdiButton::DrawButton(Gdiplus::Graphics& graphics, const CRect& rect)
 {
-	// 이미지 그리기
+	// ì´ë¯¸ì§€ ê·¸ë¦¬ê¸°
 	if (m_pImage && m_pImage->GetLastStatus() == Gdiplus::Ok)
 	{
 		graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
@@ -138,17 +136,17 @@ void CGdiButton::DrawButton(Gdiplus::Graphics& graphics, const CRect& rect)
 	}
 	else
 	{
-		// 이미지가 없으면 기본 버튼 그리기
+		// ì´ë¯¸ì§€ê°€ ì—†ìœ¼ë©´ ê¸°ë³¸ ë²„íŠ¼ ê·¸ë¦¬ê¸°
 		Gdiplus::Color fillColor(255, 240, 240, 240);
 		Gdiplus::SolidBrush brush(fillColor);
 		graphics.FillRectangle(&brush, rect.left, rect.top, rect.Width(), rect.Height());
 
-		// 테두리
+		// í…Œë‘ë¦¬
 		Gdiplus::Pen pen(Gdiplus::Color(255, 128, 128, 128), 1.0f);
 		graphics.DrawRectangle(&pen, rect.left, rect.top, rect.Width() - 1, rect.Height() - 1);
 	}
 
-	// GdiText를 사용하여 텍스트 그리기
+	// GdiTextë¥¼ ì‚¬ìš©í•˜ì—¬ í…ìŠ¤íŠ¸ ê·¸ë¦¬ê¸°
 	Gdiplus::RectF layoutRect((Gdiplus::REAL)rect.left, (Gdiplus::REAL)rect.top, 
 		(Gdiplus::REAL)rect.Width(), (Gdiplus::REAL)rect.Height());
 	
@@ -157,8 +155,8 @@ void CGdiButton::DrawButton(Gdiplus::Graphics& graphics, const CRect& rect)
 
 void CGdiButton::OnPaint()
 {
-	// 중앙 렌더링으로 이동하여 OnPaint 비활성화
-	// CPaintDC는 생성해야 WM_PAINT 메시지 처리 완료
+	// ì¤‘ì•™ ë Œë”ë§ìœ¼ë¡œ ì´ë™í•˜ì—¬ OnPaint ë¹„í™œì„±í™”
+	// CPaintDCëŠ” ìƒì„±í•´ì•¼ WM_PAINT ë©”ì‹œì§€ ì²˜ë¦¬ ì™„ë£Œ
 	CPaintDC dc(this);
 }
 
@@ -174,17 +172,17 @@ void CGdiButton::OnLButtonUp(UINT nFlags, CPoint point)
 	CRect rect;
 	GetClientRect(&rect);
 	
-	// 버튼 영역 내에서 떼면 클릭으로 처리
+	// ë²„íŠ¼ ì˜ì—­ ë‚´ì—ì„œ ë–¼ë©´ í´ë¦­ìœ¼ë¡œ ì²˜ë¦¬
 	if (rect.PtInRect(point))
 	{
-		// 클릭 이벤트 발생
+		// í´ë¦­ ì´ë²¤íŠ¸ ë°œìƒ
 		if (m_onClickCallback)
 		{
 			m_onClickCallback();
 		}
 		else
 		{
-			// 부모에게 BN_CLICKED 메시지 전송
+			// ë¶€ëª¨ì—ê²Œ BN_CLICKED ë©”ì‹œì§€ ì „ì†¡
 			GetParent()->SendMessage(WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), BN_CLICKED), (LPARAM)m_hWnd);
 		}
 	}
@@ -211,22 +209,22 @@ void CGdiButton::OnMouseLeave()
 
 BOOL CGdiButton::OnEraseBkgnd(CDC* pDC)
 {
-	return TRUE;  // 깜박임 방지
+	return TRUE;  // ê¹œë°•ìž„ ë°©ì§€
 }
 
 void CGdiButton::Draw(Gdiplus::Graphics& graphics, CPoint offset, float deltaTime)
 {
-	// 좌표 저장 (그리기 오프셋)
+	// ì¢Œí‘œ ì €ìž¥ (ê·¸ë¦¬ê¸° ì˜¤í”„ì…‹)
 	Gdiplus::Matrix matrix;
 	graphics.GetTransform(&matrix);
 	graphics.TranslateTransform((float)offset.x, (float)offset.y);
 
-	// 버튼 그리기
+	// ë²„íŠ¼ ê·¸ë¦¬ê¸°
 	CRect rect;
 	GetClientRect(&rect);
 	DrawButton(graphics, rect);
 
-	// 좌표 복원
+	// ì¢Œí‘œ ë³µì›
 	graphics.SetTransform(&matrix);
 }
 

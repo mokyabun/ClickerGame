@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <string>
 #include <vector>
 
@@ -85,8 +85,4 @@ public:
 	void Reset();
 	void InitializeUpgrades();
 	void InitializeSpecialUpgrades();
-
-	// JSON 직렬화
-	CString ToJson() const;
-	void FromJson(const CString& json);
 };

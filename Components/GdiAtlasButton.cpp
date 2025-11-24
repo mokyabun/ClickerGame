@@ -32,6 +32,7 @@ BEGIN_MESSAGE_MAP(CGdiAtlasButton, CGdiButton)
 	ON_WM_MOUSELEAVE()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
+	ON_WM_ENABLE()
 END_MESSAGE_MAP()
 
 void CGdiAtlasButton::SetAtlasImage(const CString& atlasImagePath, int buttonWidth, int buttonHeight)
@@ -85,7 +86,12 @@ void CGdiAtlasButton::ExtractImagesFromAtlas()
 
 	// 아틀라스 높이 확인 (2-state 또는 3-state 자동 감지)
 	UINT atlasHeight = m_pAtlasImage->GetHeight();
-	bool is2State = (atlasHeight == m_buttonHeight * 2);
+	
+	// 안전 장치: 높이가 버튼 높이보다 작으면 실패 처리
+	if (atlasHeight < (UINT)m_buttonHeight)
+		return;
+
+	bool is2State = (atlasHeight < (UINT)m_buttonHeight * 3); // 3배보다 작으면 2-state로 간주 (또는 1-state)
 
 	// Normal 이미지 추출 (0, 0, width, height)
 	m_pExtractedNormal = new Gdiplus::Bitmap(m_buttonWidth, m_buttonHeight, PixelFormat32bppARGB);
@@ -94,14 +100,21 @@ void CGdiAtlasButton::ExtractImagesFromAtlas()
 
 	if (is2State)
 	{
-		// 2-state 아틀라스: Normal, Click
-		m_pExtractedHover = new Gdiplus::Bitmap(m_buttonWidth, m_buttonHeight, PixelFormat32bppARGB);
-		Gdiplus::Graphics gHover(m_pExtractedHover);
-		gHover.DrawImage(m_pAtlasImage, 0, 0, 0, 0, m_buttonWidth, m_buttonHeight, Gdiplus::UnitPixel);
+		// 2-state 아틀라스: Normal, Click (Pressed)
+		// Hover는 Normal과 동일하게 처리
+		m_pExtractedHover = nullptr; // Hover는 Normal 공유
 
-		m_pExtractedPressed = new Gdiplus::Bitmap(m_buttonWidth, m_buttonHeight, PixelFormat32bppARGB);
-		Gdiplus::Graphics gPressed(m_pExtractedPressed);
-		gPressed.DrawImage(m_pAtlasImage, 0, 0, 0, m_buttonHeight, m_buttonWidth, m_buttonHeight, Gdiplus::UnitPixel);
+		if (atlasHeight >= (UINT)m_buttonHeight * 2)
+		{
+			m_pExtractedPressed = new Gdiplus::Bitmap(m_buttonWidth, m_buttonHeight, PixelFormat32bppARGB);
+			Gdiplus::Graphics gPressed(m_pExtractedPressed);
+			gPressed.DrawImage(m_pAtlasImage, 0, 0, 0, m_buttonHeight, m_buttonWidth, m_buttonHeight, Gdiplus::UnitPixel);
+		}
+		else
+		{
+			// 1-state인 경우 Pressed도 Normal 공유
+			m_pExtractedPressed = nullptr;
+		}
 	}
 	else
 	{
@@ -124,9 +137,14 @@ void CGdiAtlasButton::CleanupExtractedImages()
 		m_pExtractedNormal = nullptr;
 	}
 	
-	if (m_pExtractedHover)
+	// Hover가 Normal과 같은 포인터를 공유하는 경우가 있으므로 확인
+	if (m_pExtractedHover && m_pExtractedHover != m_pExtractedNormal)
 	{
 		delete m_pExtractedHover;
+		m_pExtractedHover = nullptr;
+	}
+	else if (m_pExtractedHover)
+	{
 		m_pExtractedHover = nullptr;
 	}
 	
@@ -150,6 +168,13 @@ void CGdiAtlasButton::UpdateImageForState()
 			pCurrentImage = m_pExtractedPressed ? m_pExtractedPressed : m_pExtractedNormal;
 			break;
 		}
+		case Disabled: {
+			// Disabled 상태에서는 Pressed 이미지(눌린 상태)를 보여주거나, 
+			// 별도의 Disabled 이미지가 있다면 그것을 사용.
+			// 요청사항: "이미 Upgrade가 완료된 애들은, 클릭된 state로 만들어서, disabled된 것처럼 바꿔줘."
+			pCurrentImage = m_pExtractedPressed ? m_pExtractedPressed : m_pExtractedNormal;
+			break;
+		}
 		default: {
 			pCurrentImage = m_pExtractedNormal;
 			break;
@@ -161,6 +186,9 @@ void CGdiAtlasButton::UpdateImageForState()
 
 void CGdiAtlasButton::OnMouseMove(UINT nFlags, CPoint point)
 {
+	if (m_state == Disabled)
+		return;
+
 	CGdiButton::OnMouseMove(nFlags, point);
 
 	ButtonState newState = m_state;
@@ -185,6 +213,9 @@ void CGdiAtlasButton::OnMouseMove(UINT nFlags, CPoint point)
 
 void CGdiAtlasButton::OnMouseLeave()
 {
+	if (m_state == Disabled)
+		return;
+
 	// 부모 클래스의 마우스 추적 해제 호출
 	CGdiButton::OnMouseLeave();
 
@@ -197,6 +228,9 @@ void CGdiAtlasButton::OnMouseLeave()
 
 void CGdiAtlasButton::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	if (m_state == Disabled)
+		return;
+
 	// 부모 클래스의 처리 호출
 	CGdiButton::OnLButtonDown(nFlags, point);
 
@@ -206,11 +240,31 @@ void CGdiAtlasButton::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CGdiAtlasButton::OnLButtonUp(UINT nFlags, CPoint point)
 {
+	if (m_state == Disabled)
+		return;
+
 	// 부모 클래스의 처리 호출 (클릭 이벤트 발생)
 	CGdiButton::OnLButtonUp(nFlags, point);
 
 	CRect rect;
 	GetClientRect(&rect);
 	m_state = rect.PtInRect(point) ? Hover : Normal;
+	UpdateImageForState();
+}
+
+void CGdiAtlasButton::OnEnable(BOOL bEnable)
+{
+	CGdiButton::OnEnable(bEnable);
+
+	if (bEnable)
+	{
+		// 활성화되면 Normal 상태로 복귀 (마우스 위치 체크는 별도로 필요할 수 있음)
+		m_state = Normal;
+	}
+	else
+	{
+		// 비활성화되면 Disabled 상태로 변경
+		m_state = Disabled;
+	}
 	UpdateImageForState();
 }
