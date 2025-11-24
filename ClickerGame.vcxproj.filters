@@ -16,7 +16,7 @@
     <Filter Include="Core">
       <UniqueIdentifier>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</UniqueIdentifier>
     </Filter>
-    <Filter Include="View">
+    <Filter Include="Dialog">
       <UniqueIdentifier>{0F1E2D3C-4B5A-6978-90AB-CDEF12345678}</UniqueIdentifier>
     </Filter>
     <Filter Include="MFC">
@@ -27,7 +27,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ClickerGame.h">
+    <ClInclude Include="MFC\ClickerGame.h">
       <Filter>MFC</Filter>
     </ClInclude>
     <ClInclude Include="framework.h">
@@ -36,13 +36,13 @@
     <ClInclude Include="targetver.h">
       <Filter>MFC</Filter>
     </ClInclude>
-    <ClInclude Include="MainFrm.h">
+    <ClInclude Include="MFC\MainFrm.h">
       <Filter>MFC</Filter>
     </ClInclude>
-    <ClInclude Include="ClickerGameDoc.h">
+    <ClInclude Include="MFC\ClickerGameDoc.h">
       <Filter>MFC</Filter>
     </ClInclude>
-    <ClInclude Include="ClickerGameView.h">
+    <ClInclude Include="MFC\ClickerGameView.h">
       <Filter>MFC</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
@@ -51,67 +51,91 @@
     <ClInclude Include="pch.h">
       <Filter>MFC</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore.h">
+    <ClInclude Include="Core\GameCore.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="GameState.h">
+    <ClInclude Include="Core\GameState.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="MainDialog.h">
-      <Filter>View</Filter>
+    <ClInclude Include="Dialog\MainDialog.h">
+      <Filter>Dialog</Filter>
     </ClInclude>
-    <ClInclude Include="GdiButton.h">
+    <ClInclude Include="Components\GdiButton.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="GdiIconButton.h">
+    <ClInclude Include="Components\GdiIconButton.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="GdiAtlasButton.h">
+    <ClInclude Include="Components\GdiAtlasButton.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="PathResolver.h">
+    <ClInclude Include="Components\GdiText.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\PathResolver.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="ClickerButton.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="Components\ClickerButton.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ParticleSystem.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialog\ShopDialog.h">
+      <Filter>Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialog\GdiDialogBase.h">
+      <Filter>Dialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ClickerGame.cpp">
+    <ClCompile Include="MFC\ClickerGame.cpp">
       <Filter>MFC</Filter>
     </ClCompile>
-    <ClCompile Include="MainFrm.cpp">
+    <ClCompile Include="MFC\MainFrm.cpp">
       <Filter>MFC</Filter>
     </ClCompile>
-    <ClCompile Include="ClickerGameDoc.cpp">
+    <ClCompile Include="MFC\ClickerGameDoc.cpp">
       <Filter>MFC</Filter>
     </ClCompile>
-    <ClCompile Include="ClickerGameView.cpp">
+    <ClCompile Include="MFC\ClickerGameView.cpp">
       <Filter>MFC</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>MFC</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore.cpp">
+    <ClCompile Include="Core\GameCore.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="GameState.cpp">
+    <ClCompile Include="Core\GameState.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="MainDialog.cpp">
-      <Filter>View</Filter>
+    <ClCompile Include="Dialog\MainDialog.cpp">
+      <Filter>Dialog</Filter>
     </ClCompile>
-    <ClCompile Include="GdiButton.cpp">
+    <ClCompile Include="Components\GdiButton.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="GdiIconButton.cpp">
+    <ClCompile Include="Components\GdiIconButton.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="GdiAtlasButton.cpp">
+    <ClCompile Include="Components\GdiAtlasButton.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="ClickerButton.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="Components\GdiText.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\ClickerButton.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ParticleSystem.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialog\ShopDialog.cpp">
+      <Filter>Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialog\GdiDialogBase.cpp">
+      <Filter>Dialog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

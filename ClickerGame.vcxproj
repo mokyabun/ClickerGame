@@ -44,7 +44,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
@@ -93,6 +93,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Dialog;$(ProjectDir)Core;$(ProjectDir)Components;$(ProjectDir)MFC;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -114,6 +115,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Dialog;$(ProjectDir)Core;$(ProjectDir)Components;$(ProjectDir)MFC;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -137,6 +139,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Dialog;$(ProjectDir)Core;$(ProjectDir)Components;$(ProjectDir)MFC;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -162,6 +165,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Dialog;$(ProjectDir)Core;$(ProjectDir)Components;$(ProjectDir)MFC;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -179,45 +183,53 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ClickerGame.h" />
-    <ClInclude Include="ClickerGameDoc.h" />
-    <ClInclude Include="ClickerGameView.h" />
-    <ClInclude Include="ClickerButton.h" />
-    <ClInclude Include="GameCore.h" />
-    <ClInclude Include="GameState.h" />
+    <ClInclude Include="FrenzyDialog.h" />
+    <ClInclude Include="MFC\ClickerGame.h" />
+    <ClInclude Include="MFC\ClickerGameDoc.h" />
+    <ClInclude Include="MFC\ClickerGameView.h" />
+    <ClInclude Include="Components\ClickerButton.h" />
+    <ClInclude Include="Core\GameCore.h" />
+    <ClInclude Include="Core\GameState.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="GdiAtlasButton.h" />
-    <ClInclude Include="GdiButton.h" />
-    <ClInclude Include="GdiIconButton.h" />
-    <ClInclude Include="MainDialog.h" />
-    <ClInclude Include="MainFrm.h" />
-    <ClInclude Include="ParticleSystem.h" />
-    <ClInclude Include="PathResolver.h" />
+    <ClInclude Include="Components\GdiAtlasButton.h" />
+    <ClInclude Include="Components\GdiButton.h" />
+    <ClInclude Include="Dialog\GdiDialogBase.h" />
+    <ClInclude Include="Components\GdiIconButton.h" />
+    <ClInclude Include="Components\GdiText.h" />
+    <ClInclude Include="Dialog\MainDialog.h" />
+    <ClInclude Include="MFC\MainFrm.h" />
+    <ClInclude Include="Core\ParticleSystem.h" />
+    <ClInclude Include="Core\PathResolver.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="ShopDialog.h" />
+    <ClInclude Include="Dialog\ShopDialog.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Dialog\UpgradeDialog.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ClickerGame.cpp" />
-    <ClCompile Include="ClickerGameDoc.cpp" />
-    <ClCompile Include="ClickerGameView.cpp" />
-    <ClCompile Include="ClickerButton.cpp" />
-    <ClCompile Include="GameCore.cpp" />
-    <ClCompile Include="GameState.cpp" />
-    <ClCompile Include="GdiAtlasButton.cpp" />
-    <ClCompile Include="GdiButton.cpp" />
-    <ClCompile Include="GdiIconButton.cpp" />
-    <ClCompile Include="MainDialog.cpp" />
-    <ClCompile Include="MainFrm.cpp" />
-    <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="FrenzyDialog.cpp" />
+    <ClCompile Include="MFC\ClickerGame.cpp" />
+    <ClCompile Include="MFC\ClickerGameDoc.cpp" />
+    <ClCompile Include="MFC\ClickerGameView.cpp" />
+    <ClCompile Include="Components\ClickerButton.cpp" />
+    <ClCompile Include="Core\GameCore.cpp" />
+    <ClCompile Include="Core\GameState.cpp" />
+    <ClCompile Include="Components\GdiAtlasButton.cpp" />
+    <ClCompile Include="Components\GdiButton.cpp" />
+    <ClCompile Include="Dialog\GdiDialogBase.cpp" />
+    <ClCompile Include="Components\GdiIconButton.cpp" />
+    <ClCompile Include="Components\GdiText.cpp" />
+    <ClCompile Include="Dialog\MainDialog.cpp" />
+    <ClCompile Include="MFC\MainFrm.cpp" />
+    <ClCompile Include="Core\ParticleSystem.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ShopDialog.cpp" />
+    <ClCompile Include="Dialog\ShopDialog.cpp" />
+    <ClCompile Include="Dialog\UpgradeDialog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClickerGame.reg" />
