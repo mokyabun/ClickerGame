@@ -62,7 +62,7 @@ void CUpgradeDialog::OnGdiInitialize()
 	::SetLayeredWindowAttributes(m_hWnd, RGB(255, 0, 255), 0, LWA_COLORKEY);
 
 	// ìœˆë„ìš° í¬ê¸° ì„¤ì • (400x600 - 2ì—´ ë ˆì´ì•„ì›ƒì„ ìœ„í•´ ë„ˆë¹„ í™•ìž¥)
-	SetWindowPos(nullptr, 0, 0, 400, 600, SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+	SetWindowPos(nullptr, 0, 0, 383, 600, SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
 	CenterWindow();
 
 	// GDI+ ë°°ê²½ ì´ë¯¸ì§€ ë¡œë“œ
@@ -81,7 +81,7 @@ void CUpgradeDialog::OnGdiInitialize()
 	const int yMargin = 5;
 	const int xMargin = 5;
 	
-	CRect btnRect(400 - btnWidth - xMargin, yMargin, 400 - xMargin, yMargin + btnHeight);
+	CRect btnRect(383 - btnWidth - xMargin, yMargin, 383 - xMargin, yMargin + btnHeight);
 	m_btnClose.Create(L"", btnRect, this, 4000);
 	m_btnClose.SetAtlasImage(_T("Shared\\X.png"), btnWidth, btnHeight);
 
@@ -90,7 +90,7 @@ void CUpgradeDialog::OnGdiInitialize()
 	const int itemBtnHeight = 48;
 	const int startX = 11;
 	const int startY = 100;
-	const int spacingX = 189;  // ë²„íŠ¼ ë„ˆë¹„ + ê°„ê²©
+	const int spacingX = 183;  // ë²„íŠ¼ ë„ˆë¹„ + ê°„ê²©
 	const int spacingY = 48;
 	const int columns = 2;
 
@@ -111,7 +111,7 @@ void CUpgradeDialog::OnGdiInitialize()
 			pBtn->Create(L"", btnRect, this, 3000 + i);
 			
 			// 2-state ì•„í‹€ë¼ìŠ¤ ì„¤ì •
-			pBtn->SetAtlasImage(_T("Upgrade\\Button.png"), itemBtnWidth, itemBtnHeight);
+			pBtn->SetAtlasImage(_T("Shop\\Button.png"), itemBtnWidth, itemBtnHeight);
 
 			// ì•„ì´í…œ ì´ë¦„ ì„¤ì •
 			const SpecialUpgradeData* pUpgrade = m_pDoc->GetGameCore().GetSpecialUpgrade(i);
@@ -155,7 +155,7 @@ void CUpgradeDialog::OnGdiInitialize()
 	m_tooltipPrice.SetShadowColor(180, 0, 0, 0);
 
 	// ê³ ì • í¬ê¸° ë²„í¼ ìƒì„± (400x600)
-	InitializeRenderBuffer(400, 600);
+	InitializeRenderBuffer(383, 600);
 }
 
 
@@ -257,7 +257,7 @@ void CUpgradeDialog::OnRenderContent(Gdiplus::Graphics& graphics, float deltaTim
 	// ë°°ê²½ ì´ë¯¸ì§€ ê·¸ë¦¬ê¸°
 	if (m_pBackgroundImage && m_pBackgroundImage->GetLastStatus() == Gdiplus::Ok)
 	{
-		graphics.DrawImage(m_pBackgroundImage, 0, 0, 400, 600);
+		graphics.DrawImage(m_pBackgroundImage, 0, 0, 383, 600);
 	}
 
 
