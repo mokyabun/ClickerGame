@@ -96,7 +96,7 @@ void CMainDialog::OnGdiInitialize()
 		MessageBox(msg, L"오류", MB_OK | MB_ICONERROR);
 	}
 
-	// 닫기 버튼 생성 (좌표 기반, 오른쪽 위 21x21 크기)
+	// 닫기 버튼
 	const int btnWidth = 21;
 	const int btnHeight = 21;
 	const int yMargin = 5;
@@ -106,7 +106,7 @@ void CMainDialog::OnGdiInitialize()
 	m_btnClose.Create(L"", btnRect, this, 1002);
 	m_btnClose.SetAtlasImage(L"Main\\X.png", btnWidth, btnHeight);
 
-	// 상점 버튼 생성 (왼쪽 위, 48x48 아이콘 + 텍스트 영역)
+	// 상점 버튼
 	const int shopBtnWidth = 75;
 	const int shopBtnHeight = 75;
 	const int shopX = 20;
@@ -120,7 +120,7 @@ void CMainDialog::OnGdiInitialize()
 	m_btnShop.SetOnClickCallback([this]() { OnShopButtonClick(); });
 	m_btnShop.SetOnTriggerCallback([this]() { OnShopButtonTrigger(); });
 
-	// 업그레이드 버튼 생성 (상점 버튼 아래)
+	// 업그레이드 버튼
 	const int upgradeX = shopX;
 	const int upgradeY = shopY + shopBtnHeight + 10;
 	CRect upgradeBtnRect(upgradeX, upgradeY, upgradeX + shopBtnWidth, upgradeY + shopBtnHeight);
@@ -132,7 +132,7 @@ void CMainDialog::OnGdiInitialize()
 	m_btnUpgrade.SetOnClickCallback([this]() { OnUpgradeButtonClick(); });
 	m_btnUpgrade.SetOnTriggerCallback([this]() { OnUpgradeButtonTrigger(); });
 
-	// 설정 버튼 생성 (업그레이드 버튼 아래)
+	// 설정 버튼
 	const int settingsX = shopX;
 	const int settingsY = upgradeY + shopBtnHeight + 10;
 	CRect settingsBtnRect(settingsX, settingsY, settingsX + shopBtnWidth, settingsY + shopBtnHeight);
@@ -144,7 +144,7 @@ void CMainDialog::OnGdiInitialize()
 	m_btnSettings.SetOnClickCallback([this]() { OnSettingsButtonClick(); });
 	m_btnSettings.SetOnTriggerCallback([this]() { OnSettingsButtonTrigger(); });
 
-	// 바이러스 버튼 생성 (화면 중앙, 확대를 고려해 20% 더 큰 영역으로 생성)
+	// 바이러스 버튼
 	const int virusBtnWidth = 245;
 	const int virusBtnHeight = 245;
 	const float expandMargin = 1.2f; // hover 시 최대 크기
@@ -157,8 +157,7 @@ void CMainDialog::OnGdiInitialize()
 	m_btnVirus.Create(L"", virusBtnRect, this, 1003);
 	m_btnVirus.SetImage(L"Main\\Virus.png");
 
-	// 텍스트 초기화
-	// 1. "Windows XP" 타이틀
+	// Windows XP 타이틀
 	m_titleText.SetText(L"Windows XP");
 	m_titleText.SetFont(L"Tahoma", 10.0f, Gdiplus::FontStyleBold);
 	m_titleText.SetColor(255, 255, 255, 255);
@@ -298,28 +297,28 @@ void CMainDialog::OnUpdateLogic(float deltaTime)
 
 void CMainDialog::OnRenderContent(Gdiplus::Graphics& graphics, float deltaTime)
 {
-	// 배경 이미지 그리기
+	// 배경 이미지
 	if (m_pBackgroundImage && m_pBackgroundImage->GetLastStatus() == Gdiplus::Ok)
 	{
 		graphics.DrawImage(m_pBackgroundImage, 0, 0, 800, 600);
 	}
 	
-	// 오른쪽 위에 "Windows XP" 텍스트 그리기
+	// Windows XP 텍스트
 	m_titleText.Draw(graphics, 29.0f, 6.0f);
 	
-	// 파티클 렌더링 (ZPC 텍스트 아래에 그려짐)
+	// 파티클 렌더링
 	m_particleSystem.Draw(graphics);
 	
-	// 화면 중앙 위에 ZPC 재화 표시
+	// ZPC 재화 표시
 	m_currencyText.Draw(graphics, 400.0f, 55.0f);
 	
-	// 오른쪽 아래에 "시작" 텍스트 그리기
+	// 시작 텍스트
 	m_startText.Draw(graphics, 35.0f, 568.0f);
 	
-	// 오른쪽 아래에 시계 그리기
+	// 시계 텍스트
 	m_clockText.Draw(graphics, 738.0f, 574.0f);
 
-	// 버튼 그리기 (직접 그리기)
+	// 버튼
 	m_btnVirus.Draw(graphics, deltaTime);
 	m_btnShop.Draw(graphics, deltaTime);
 	m_btnUpgrade.Draw(graphics, deltaTime);

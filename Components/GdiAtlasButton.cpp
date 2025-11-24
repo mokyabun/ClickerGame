@@ -12,6 +12,7 @@ CGdiAtlasButton::CGdiAtlasButton()
 	, m_pExtractedNormal(nullptr)
 	, m_pExtractedHover(nullptr)
 	, m_pExtractedPressed(nullptr)
+	, m_state(Normal)
 {
 }
 
@@ -25,6 +26,13 @@ CGdiAtlasButton::~CGdiAtlasButton()
 		m_pAtlasImage = nullptr;
 	}
 }
+
+BEGIN_MESSAGE_MAP(CGdiAtlasButton, CGdiButton)
+	ON_WM_MOUSEMOVE()
+	ON_WM_MOUSELEAVE()
+	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
+END_MESSAGE_MAP()
 
 void CGdiAtlasButton::SetAtlasImage(const CString& atlasImagePath, int buttonWidth, int buttonHeight)
 {
@@ -45,6 +53,7 @@ void CGdiAtlasButton::SetAtlasImage(const CString& atlasImagePath, int buttonWid
 	if (m_pAtlasImage && m_pAtlasImage->GetLastStatus() == Gdiplus::Ok)
 	{
 		ExtractImagesFromAtlas();
+		UpdateImageForState();
 	}
 }
 
@@ -65,6 +74,7 @@ void CGdiAtlasButton::SetAtlasImageFromMemory(Gdiplus::Image* pAtlasImage, int b
 	if (m_pAtlasImage && m_pAtlasImage->GetLastStatus() == Gdiplus::Ok)
 	{
 		ExtractImagesFromAtlas();
+		UpdateImageForState();
 	}
 }
 
@@ -84,8 +94,7 @@ void CGdiAtlasButton::ExtractImagesFromAtlas()
 
 	if (is2State)
 	{
-		// 2-state 아틀라스: Normal, Click만 있음
-		// Hover는 Normal 사용, Pressed는 Click(두 번째) 사용
+		// 2-state 아틀라스: Normal, Click
 		m_pExtractedHover = new Gdiplus::Bitmap(m_buttonWidth, m_buttonHeight, PixelFormat32bppARGB);
 		Gdiplus::Graphics gHover(m_pExtractedHover);
 		gHover.DrawImage(m_pAtlasImage, 0, 0, 0, 0, m_buttonWidth, m_buttonHeight, Gdiplus::UnitPixel);
@@ -105,9 +114,6 @@ void CGdiAtlasButton::ExtractImagesFromAtlas()
 		Gdiplus::Graphics gPressed(m_pExtractedPressed);
 		gPressed.DrawImage(m_pAtlasImage, 0, 0, 0, m_buttonHeight * 2, m_buttonWidth, m_buttonHeight, Gdiplus::UnitPixel);
 	}
-
-	// 부모 클래스에 추출된 이미지 설정
-	SetImageFromPath(m_pExtractedNormal, m_pExtractedHover, m_pExtractedPressed);
 }
 
 void CGdiAtlasButton::CleanupExtractedImages()
@@ -129,4 +135,82 @@ void CGdiAtlasButton::CleanupExtractedImages()
 		delete m_pExtractedPressed;
 		m_pExtractedPressed = nullptr;
 	}
+}
+
+void CGdiAtlasButton::UpdateImageForState()
+{
+	Gdiplus::Image* pCurrentImage = nullptr;
+	
+	switch (m_state) {
+		case Hover: {
+			pCurrentImage = m_pExtractedHover ? m_pExtractedHover : m_pExtractedNormal;
+			break;
+		}
+		case Pressed: {
+			pCurrentImage = m_pExtractedPressed ? m_pExtractedPressed : m_pExtractedNormal;
+			break;
+		}
+		default: {
+			pCurrentImage = m_pExtractedNormal;
+			break;
+		}
+	}
+
+	CGdiButton::SetImage(pCurrentImage, false);
+}
+
+void CGdiAtlasButton::OnMouseMove(UINT nFlags, CPoint point)
+{
+	CGdiButton::OnMouseMove(nFlags, point);
+
+	ButtonState newState = m_state;
+
+	if (nFlags & MK_LBUTTON)
+	{
+		CRect rect;
+		GetClientRect(&rect);
+		newState = rect.PtInRect(point) ? Pressed : Hover;
+	}
+	else if (m_bMouseTracking && m_state == Normal)
+	{
+		newState = Hover;
+	}
+
+	if (newState != m_state)
+	{
+		m_state = newState;
+		UpdateImageForState();
+	}
+}
+
+void CGdiAtlasButton::OnMouseLeave()
+{
+	// 부모 클래스의 마우스 추적 해제 호출
+	CGdiButton::OnMouseLeave();
+
+	if (m_state != Pressed)
+	{
+		m_state = Normal;
+		UpdateImageForState();
+	}
+}
+
+void CGdiAtlasButton::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// 부모 클래스의 처리 호출
+	CGdiButton::OnLButtonDown(nFlags, point);
+
+	m_state = Pressed;
+	UpdateImageForState();
+}
+
+void CGdiAtlasButton::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// 부모 클래스의 처리 호출 (클릭 이벤트 발생)
+	CGdiButton::OnLButtonUp(nFlags, point);
+
+	CRect rect;
+	GetClientRect(&rect);
+	m_state = rect.PtInRect(point) ? Hover : Normal;
+	UpdateImageForState();
 }

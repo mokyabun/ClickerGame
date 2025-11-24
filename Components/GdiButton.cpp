@@ -5,12 +5,9 @@
 IMPLEMENT_DYNAMIC(CGdiButton, CButton)
 
 CGdiButton::CGdiButton()
-	: m_state(Normal)
-	, m_bMouseTracking(false)
-	, m_pNormalImage(nullptr)
-	, m_pHoverImage(nullptr)
-	, m_pPressedImage(nullptr)
-	, m_bOwnsImages(false)
+	: m_bMouseTracking(false)
+	, m_pImage(nullptr)
+	, m_bOwnsImage(false)
 	, m_onClickCallback(nullptr)
 {
 	// GdiText 초기화 (기본값 설정)
@@ -22,14 +19,10 @@ CGdiButton::CGdiButton()
 
 CGdiButton::~CGdiButton()
 {
-	if (m_bOwnsImages)
+	if (m_bOwnsImage && m_pImage)
 	{
-		if (m_pNormalImage)
-			delete m_pNormalImage;
-		if (m_pHoverImage)
-			delete m_pHoverImage;
-		if (m_pPressedImage)
-			delete m_pPressedImage;
+		delete m_pImage;
+		m_pImage = nullptr;
 	}
 }
 
@@ -68,37 +61,38 @@ BOOL CGdiButton::Create(const CString& caption, const CRect& rect, CWnd* pParent
 	return result;
 }
 
-void CGdiButton::SetImage(const CString& normalImage, const CString& hoverImage, const CString& pressedImage)
+void CGdiButton::SetImage(const CString& imagePath)
 {
-	m_normalImagePath = normalImage;
-	m_hoverImagePath = hoverImage;
-	m_pressedImagePath = pressedImage;
-	
-	m_bOwnsImages = true;
-	LoadImages();
-}
-
-void CGdiButton::SetImageFromPath(Gdiplus::Image* pNormalImage, Gdiplus::Image* pHoverImage, Gdiplus::Image* pPressedImage)
-{
-	if (m_bOwnsImages)
+	if (m_bOwnsImage && m_pImage)
 	{
-		if (m_pNormalImage)
-			delete m_pNormalImage;
-		if (m_pHoverImage)
-			delete m_pHoverImage;
-		if (m_pPressedImage)
-			delete m_pPressedImage;
+		delete m_pImage;
+		m_pImage = nullptr;
 	}
 
-	m_bOwnsImages = false;
-	m_pNormalImage = pNormalImage;
-	m_pHoverImage = pHoverImage;
-	m_pPressedImage = pPressedImage;
+	if (!imagePath.IsEmpty())
+	{
+		CString fullPath = PathResolver::GetInstance().GetResourcePath(imagePath);
+		m_pImage = Gdiplus::Image::FromFile(fullPath);
+		m_bOwnsImage = true;
+	}
 }
 
-void CGdiButton::SetText(const CString& text)
+void CGdiButton::SetImage(Gdiplus::Image* pImage, bool bOwnsImage)
+{
+	if (m_bOwnsImage && m_pImage)
+	{
+		delete m_pImage;
+	}
+
+	m_pImage = pImage;
+	m_bOwnsImage = bOwnsImage;
+}
+
+CGdiButton* CGdiButton::SetText(const CString& text)
 {
 	m_gdiText.SetText(text);
+
+	return this;
 }
 
 void CGdiButton::SetTextColor(Gdiplus::Color color)
@@ -134,87 +128,18 @@ void CGdiButton::SetOnClickCallback(OnClickCallback callback)
 	m_onClickCallback = callback;
 }
 
-void CGdiButton::LoadImages()
-{
-	// 기존 이미지 해제
-	if (m_pNormalImage)
-	{
-		delete m_pNormalImage;
-		m_pNormalImage = nullptr;
-	}
-	if (m_pHoverImage)
-	{
-		delete m_pHoverImage;
-		m_pHoverImage = nullptr;
-	}
-	if (m_pPressedImage)
-	{
-		delete m_pPressedImage;
-		m_pPressedImage = nullptr;
-	}
-
-	// 새 이미지 로드
-	if (!m_normalImagePath.IsEmpty())
-	{
-		CString fullPath = PathResolver::GetInstance().GetResourcePath(m_normalImagePath);
-		m_pNormalImage = Gdiplus::Image::FromFile(fullPath);
-	}
-
-	if (!m_hoverImagePath.IsEmpty())
-	{
-		CString fullPath = PathResolver::GetInstance().GetResourcePath(m_hoverImagePath);
-		m_pHoverImage = Gdiplus::Image::FromFile(fullPath);
-	}
-
-	if (!m_pressedImagePath.IsEmpty())
-	{
-		CString fullPath = PathResolver::GetInstance().GetResourcePath(m_pressedImagePath);
-		m_pPressedImage = Gdiplus::Image::FromFile(fullPath);
-	}
-}
-
 void CGdiButton::DrawButton(Gdiplus::Graphics& graphics, const CRect& rect)
 {
-	// 현재 상태에 맞는 이미지 선택
-	Gdiplus::Image* pCurrentImage = nullptr;
-	switch (m_state)
-	{
-	case Hover:
-		pCurrentImage = m_pHoverImage ? m_pHoverImage : m_pNormalImage;
-		break;
-	case Pressed:
-		pCurrentImage = m_pPressedImage ? m_pPressedImage : m_pNormalImage;
-		break;
-	case Normal:
-	default:
-		pCurrentImage = m_pNormalImage;
-		break;
-	}
-
 	// 이미지 그리기
-	if (pCurrentImage && pCurrentImage->GetLastStatus() == Gdiplus::Ok)
+	if (m_pImage && m_pImage->GetLastStatus() == Gdiplus::Ok)
 	{
 		graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
-		graphics.DrawImage(pCurrentImage, rect.left, rect.top, rect.Width(), rect.Height());
+		graphics.DrawImage(m_pImage, rect.left, rect.top, rect.Width(), rect.Height());
 	}
 	else
 	{
 		// 이미지가 없으면 기본 버튼 그리기
-		Gdiplus::Color fillColor;
-		switch (m_state)
-		{
-		case Hover:
-			fillColor = Gdiplus::Color(255, 220, 220, 220);
-			break;
-		case Pressed:
-			fillColor = Gdiplus::Color(255, 180, 180, 180);
-			break;
-		case Normal:
-		default:
-			fillColor = Gdiplus::Color(255, 240, 240, 240);
-			break;
-		}
-
+		Gdiplus::Color fillColor(255, 240, 240, 240);
 		Gdiplus::SolidBrush brush(fillColor);
 		graphics.FillRectangle(&brush, rect.left, rect.top, rect.Width(), rect.Height());
 
@@ -239,21 +164,19 @@ void CGdiButton::OnPaint()
 
 void CGdiButton::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	m_state = Pressed;
 	SetCapture();
 }
 
 void CGdiButton::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	if (m_state == Pressed)
+	ReleaseCapture();
+
+	CRect rect;
+	GetClientRect(&rect);
+	
+	// 버튼 영역 내에서 떼면 클릭으로 처리
+	if (rect.PtInRect(point))
 	{
-		CRect rect;
-		GetClientRect(&rect);
-		CPoint pt(point);
-
-		m_state = rect.PtInRect(pt) ? Hover : Normal;
-
-		// OnLButtonDown에서 눌렀다면 무조건 클릭으로 처리 (클릭이 씹히는 현상 방지)
 		// 클릭 이벤트 발생
 		if (m_onClickCallback)
 		{
@@ -265,8 +188,6 @@ void CGdiButton::OnLButtonUp(UINT nFlags, CPoint point)
 			GetParent()->SendMessage(WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), BN_CLICKED), (LPARAM)m_hWnd);
 		}
 	}
-	
-	ReleaseCapture();
 }
 
 void CGdiButton::OnMouseMove(UINT nFlags, CPoint point)
@@ -280,38 +201,12 @@ void CGdiButton::OnMouseMove(UINT nFlags, CPoint point)
 		tme.dwHoverTime = HOVER_DEFAULT;
 		TrackMouseEvent(&tme);
 		m_bMouseTracking = true;
-
-		if (m_state == Normal)
-		{
-			m_state = Hover;
-		}
 	}
-
-	// 마우스 버튼이 눌린 상태에서 이동
-	if (nFlags & MK_LBUTTON)
-	{
-		CRect rect;
-		GetClientRect(&rect);
-		CPoint pt(point);
-		
-		ButtonState newState = rect.PtInRect(pt) ? Pressed : Hover;
-		if (newState != m_state)
-		{
-			m_state = newState;
-		}
-	}
-
-	// 기본 처리는 하지 않음 (커스텀 버튼이므로)
 }
 
 void CGdiButton::OnMouseLeave()
 {
 	m_bMouseTracking = false;
-	
-	if (m_state != Pressed)
-	{
-		m_state = Normal;
-	}
 }
 
 BOOL CGdiButton::OnEraseBkgnd(CDC* pDC)

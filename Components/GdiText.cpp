@@ -1,25 +1,22 @@
-// GdiText.cpp: 구현 파일
-//
-
 #include "pch.h"
 #include "GdiText.h"
 
 GdiText::GdiText()
 	: m_pFont(nullptr)
-	, m_color(255, 255, 255, 255)           // 기본: 흰색
-	, m_shadowColor(180, 0, 0, 0)           // 기본: 반투명 검은색
+	, m_color(255, 255, 255, 255)
+	, m_shadowColor(180, 0, 0, 0)
 	, m_alignment(Gdiplus::StringAlignmentNear)
 	, m_lineAlignment(Gdiplus::StringAlignmentNear)
 	, m_shadowStyle(ShadowStyle::None)
 	, m_shadowOffsetX(1.0f)
 	, m_shadowOffsetY(1.0f)
 {
-	// 기본 폰트 생성
 	m_pFont = new Gdiplus::Font(L"Tahoma", 12.0f, Gdiplus::FontStyleRegular);
 }
 
 GdiText::~GdiText()
 {
+	// Dispose loaded font
 	if (m_pFont)
 	{
 		delete m_pFont;
@@ -29,10 +26,12 @@ GdiText::~GdiText()
 
 void GdiText::SetFont(const CString& fontFamily, float size, Gdiplus::FontStyle style)
 {
+	// Dispose previous font
 	if (m_pFont)
 	{
 		delete m_pFont;
 	}
+	
 	m_pFont = new Gdiplus::Font(fontFamily, size, style);
 }
 
@@ -43,13 +42,15 @@ void GdiText::Draw(Gdiplus::Graphics& graphics, float x, float y)
 
 void GdiText::Draw(Gdiplus::Graphics& graphics, const Gdiplus::PointF& point)
 {
+	// To avoid crash
+	// Maybe this won't happen
 	if (!m_pFont)
 		return;
 
 	Gdiplus::StringFormat format;
 	format.SetAlignment(m_alignment);
 	format.SetLineAlignment(m_lineAlignment);
-
+	
 	DrawWithShadow(graphics, point, &format);
 }
 

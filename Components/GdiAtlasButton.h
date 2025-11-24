@@ -9,13 +9,27 @@ public:
 	CGdiAtlasButton();
 	virtual ~CGdiAtlasButton();
 
-	// 아틀라스 이미지 설정 (세로 방향: Normal, Hover, Pressed 순서)
 	void SetAtlasImage(const CString& atlasImagePath, int buttonWidth, int buttonHeight);
 	void SetAtlasImageFromMemory(Gdiplus::Image* pAtlasImage, int buttonWidth, int buttonHeight);
+
+protected:
+	DECLARE_MESSAGE_MAP()
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnMouseLeave();
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 
 private:
 	void ExtractImagesFromAtlas();
 	void CleanupExtractedImages();
+	void UpdateImageForState();
+
+	enum ButtonState
+	{
+		Normal,
+		Hover,
+		Pressed
+	};
 
 	Gdiplus::Image* m_pAtlasImage;
 	bool m_bOwnsAtlasImage;
@@ -25,4 +39,6 @@ private:
 	Gdiplus::Image* m_pExtractedNormal;
 	Gdiplus::Image* m_pExtractedHover;
 	Gdiplus::Image* m_pExtractedPressed;
+
+	ButtonState m_state;
 };
