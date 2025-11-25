@@ -10,6 +10,8 @@
 #include "ParticleSystem.h"
 #include <shlobj.h>
 #include <ctime>
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib") 
 
 
 // CMainDialog 대화 상자
@@ -482,18 +484,23 @@ void CMainDialog::OnLButtonDown(UINT nFlags, CPoint point)
 void CMainDialog::OnVirusButtonClick()
 {
 	// 바이러스 버튼 클릭 시 클릭 수 증가
-	if (m_pDoc)
+	if ( m_pDoc )
 	{
 		m_pDoc->GetGameCore().PerformClick();
-		
-		// 현재 마우스 위치에서 파티클 방출
+
+		// [추가] 리소스 사운드 재생 코드
+		// MAKEINTRESOURCE(ID) : 리소스 ID를 포인터 형식으로 변환
+		// SND_RESOURCE : 파일 경로가 아니라 리소스에서 찾으라는 옵션
+		// SND_ASYNC : 소리가 나는 동안 멈추지 않음 (비동기)
+		PlaySound(MAKEINTRESOURCE(IDR_WAVE_CLICK), AfxGetInstanceHandle(), SND_RESOURCE | SND_ASYNC | SND_NODEFAULT);
+
+		// (기존 코드) 파티클 방출
 		CPoint mousePos;
 		GetCursorPos(&mousePos);
 		ScreenToClient(&mousePos);
-		
-		// 마우스 위치에서 10~15개의 파티클 방출
-		int particleCount = 10 + (rand() % 6);
-		m_particleSystem.Emit((float)mousePos.x, (float)mousePos.y, particleCount);
+
+		int particleCount = 10 + ( rand() % 6 );
+		m_particleSystem.Emit(( float ) mousePos.x, ( float ) mousePos.y, particleCount);
 	}
 }
 
@@ -622,22 +629,38 @@ void CMainDialog::OnUpgradeButtonTrigger()
 void CMainDialog::OnSettingsButtonClick()
 {
 	// 설정 버튼 클릭 시 다른 아이콘 버튼 선택 해제
-	if (m_btnSettings.IsSelected())
+	if ( m_btnSettings.IsSelected() )
 	{
 		m_btnShop.Deselect();
 		m_btnUpgrade.Deselect();
 	}
-	
+
 	CString msg;
-	msg.Format(__T("설정 버튼 클릭 - 선택 상태: %s"), m_btnSettings.IsSelected() ? _T("선택됨") : _T("선택 안됨"));
-	TRACE(msg + __T("\n"));
+	msg.Format(L"설정 버튼 클릭 - 선택 상태: %s",
+		m_btnSettings.IsSelected() ? L"선택됨" : L"선택 안됨");
+	TRACE(msg + L"\n");
 }
 
 void CMainDialog::OnSettingsButtonTrigger()
 {
-	// 설정 버튼 더블클릭 시 (트리거)
-	AfxMessageBox(_T("설정 열기!"));
-	TRACE(_T("설정 버튼 더블클릭 - 설정 열기\n"));
+	// 설정 버튼 더블클릭 시 (트리거) -> 게임 초기화 기능 수행
+	// 정말로 초기화할 것인지 사용자에게 확인
+	if ( AfxMessageBox(L"정말로 게임 데이터를 초기화하시겠습니까?\n모든 진행 상황이 사라집니다.", MB_YESNO | MB_ICONQUESTION) == IDYES )
+	{
+		if ( m_pDoc )
+		{
+			// 1. 게임 코어 리셋 (데이터 초기화)
+			m_pDoc->GetGameCore().Reset();
+
+			// 2. 파티클 시스템 초기화 (화면에 떠있는 효과 제거)
+			m_particleSystem.Clear();
+
+			// 3. 파일에도 초기화된 상태 저장 (즉시 반영)
+			SaveGameState();
+
+			AfxMessageBox(L"게임이 초기화되었습니다.");
+		}
+	}
 }
 
 void CMainDialog::OnLButtonUp(UINT nFlags, CPoint point)

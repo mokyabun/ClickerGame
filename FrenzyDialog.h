@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "afxdialogex.h"
+#include "GdiButton.h"
 #include <functional>
 
 
@@ -17,6 +18,8 @@ public:
 
 private:
     std::function<void()> m_onClickCallback;
+    CGdiButton m_btnGoldVirus;
+    ULONG_PTR m_gdiplusToken;
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -28,6 +31,8 @@ protected:
     virtual BOOL OnInitDialog();
     afx_msg void OnTimer(UINT_PTR nIDEvent);
     afx_msg void OnBnClickedFrenzy();
+    afx_msg void OnPaint();
+    afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 
 	DECLARE_MESSAGE_MAP()
 };

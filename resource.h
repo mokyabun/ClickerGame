@@ -12,6 +12,7 @@
 #define IDD_UPGRADE                     320
 #define IDC_BUTTON1                     1000
 #define IDC_FRENZY                      1000
+#define IDR_WAVE_CLICK              2001
 
 // Next default values for new objects
 // 
