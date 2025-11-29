@@ -169,9 +169,6 @@ void CGdiAtlasButton::UpdateImageForState()
 			break;
 		}
 		case Disabled: {
-			// Disabled 상태에서는 Pressed 이미지(눌린 상태)를 보여주거나, 
-			// 별도의 Disabled 이미지가 있다면 그것을 사용.
-			// 요청사항: "이미 Upgrade가 완료된 애들은, 클릭된 state로 만들어서, disabled된 것처럼 바꿔줘."
 			pCurrentImage = m_pExtractedPressed ? m_pExtractedPressed : m_pExtractedNormal;
 			break;
 		}
@@ -216,7 +213,6 @@ void CGdiAtlasButton::OnMouseLeave()
 	if (m_state == Disabled)
 		return;
 
-	// 부모 클래스의 마우스 추적 해제 호출
 	CGdiButton::OnMouseLeave();
 
 	if (m_state != Pressed)
