@@ -116,7 +116,7 @@ GameState::GameState()
             // 특별 업그레이드 효과 적용
             double multiplier = 1.0;
             for (const auto& special : specialUpgrades) {
-                if (special.isPurchased) continue;
+                if (!special.isPurchased) continue;
                 if (special.category != upgrade.name) continue;
 
                 multiplier *= 2.0;

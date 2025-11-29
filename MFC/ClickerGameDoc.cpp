@@ -81,19 +81,16 @@ CString CClickerGameDoc::SerializeGameState(const GameState& state) const {
 }
 
 void CClickerGameDoc::DeserializeGameState(GameState& state, const CString& data) const {
-    // 라인 단위로 파싱
     int pos = 0;
     bool inUpgrades = false;
     bool inSpecialUpgrades = false;
     
     while (pos < data.GetLength()) {
-        // 다음 줄바꿈 찾기
         int newlinePos = data.Find(_T('\n'), pos);
         if (newlinePos < 0) {
             newlinePos = data.GetLength();
         }
         
-        // 현재 라인 추출
         CString line = data.Mid(pos, newlinePos - pos);
         line.Trim();
         
@@ -113,7 +110,6 @@ void CClickerGameDoc::DeserializeGameState(GameState& state, const CString& data
                 inSpecialUpgrades = false;
             }
             else if (inUpgrades) {
-                // 업그레이드 데이터 파싱: id:owned
                 int colonPos = line.Find(_T(':'));
                 if (colonPos > 0) {
                     CString idStr = line.Left(colonPos);
@@ -131,7 +127,6 @@ void CClickerGameDoc::DeserializeGameState(GameState& state, const CString& data
                 }
             }
             else if (inSpecialUpgrades) {
-                // 특별 업그레이드 데이터 파싱: id:1
                 int colonPos = line.Find(_T(':'));
                 if (colonPos > 0) {
                     CString idStr = line.Left(colonPos);
@@ -146,7 +141,6 @@ void CClickerGameDoc::DeserializeGameState(GameState& state, const CString& data
                 }
             }
             else {
-                // 키=값 형식 파싱
                 int equalPos = line.Find(_T('='));
                 if (equalPos > 0) {
                     CString key = line.Left(equalPos);
