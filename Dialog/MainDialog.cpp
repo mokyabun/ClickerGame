@@ -612,11 +612,11 @@ void CMainDialog::OnUpgradeButtonTrigger()
 		CRect mainRect;
 		GetWindowRect(&mainRect);
 		
-		// 업그레이드 창은 400x600 크기
-		int upgradeX = mainRect.left - 400;
+		// 업그레이드 창은 383x600 크기
+		int upgradeX = mainRect.left - 383;
 		int upgradeY = mainRect.top;
 		
-		m_pUpgradeDialog->SetWindowPos(nullptr, upgradeX, upgradeY, 400, 600, SWP_NOZORDER);
+		m_pUpgradeDialog->SetWindowPos(nullptr, upgradeX, upgradeY, 383, 600, SWP_NOZORDER);
 		m_pUpgradeDialog->ShowWindow(SW_SHOW);
 	}
 	else

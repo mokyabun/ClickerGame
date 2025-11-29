@@ -27,6 +27,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Dialog\FrenzyDialog.h">
+      <Filter>Dialog</Filter>
+    </ClInclude>
     <ClInclude Include="MFC\ClickerGame.h">
       <Filter>MFC</Filter>
     </ClInclude>
@@ -60,6 +63,9 @@
     <ClInclude Include="Dialog\MainDialog.h">
       <Filter>Dialog</Filter>
     </ClInclude>
+    <ClInclude Include="Dialog\UpgradeDialog.h">
+      <Filter>Dialog</Filter>
+    </ClInclude>
     <ClInclude Include="Components\GdiButton.h">
       <Filter>Components</Filter>
     </ClInclude>
@@ -89,6 +95,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Dialog\FrenzyDialog.cpp">
+      <Filter>Dialog</Filter>
+    </ClCompile>
     <ClCompile Include="MFC\ClickerGame.cpp">
       <Filter>MFC</Filter>
     </ClCompile>
@@ -111,6 +120,9 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Dialog\MainDialog.cpp">
+      <Filter>Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialog\UpgradeDialog.cpp">
       <Filter>Dialog</Filter>
     </ClCompile>
     <ClCompile Include="Components\GdiButton.cpp">

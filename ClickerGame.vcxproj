@@ -183,7 +183,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="FrenzyDialog.h" />
+    <ClInclude Include="Dialog\FrenzyDialog.h" />
     <ClInclude Include="MFC\ClickerGame.h" />
     <ClInclude Include="MFC\ClickerGameDoc.h" />
     <ClInclude Include="MFC\ClickerGameView.h" />
@@ -208,7 +208,7 @@
     <ClInclude Include="Core\SnowfallParticle.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FrenzyDialog.cpp" />
+    <ClCompile Include="Dialog\FrenzyDialog.cpp" />
     <ClCompile Include="MFC\ClickerGame.cpp" />
     <ClCompile Include="MFC\ClickerGameDoc.cpp" />
     <ClCompile Include="MFC\ClickerGameView.cpp" />
@@ -235,7 +235,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClickerGame.reg" />
-    <None Include="kill_process.ps1" />
     <None Include="res\ClickerGame.rc2" />
   </ItemGroup>
   <ItemGroup>
