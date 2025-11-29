@@ -43,7 +43,9 @@ void ParticleSystem::Update(float deltaTime)
 void ParticleSystem::Draw(Gdiplus::Graphics& graphics)
 {
 	for (const auto& p : m_particles) {
-		float clampedAlpha = std::clamp(p.alpha, 0.0f, 255.0f);
+		float clampedAlpha = p.alpha;
+		if (clampedAlpha < 0.0f) clampedAlpha = 0.0f;
+		if (clampedAlpha > 255.0f) clampedAlpha = 255.0f;
 		int alpha = static_cast<int>(clampedAlpha);
 		
 		Gdiplus::Color color(alpha, 0, 0, 0);
