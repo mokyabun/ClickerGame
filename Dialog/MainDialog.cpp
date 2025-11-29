@@ -232,7 +232,7 @@ void CMainDialog::OnGdiInitialize()
     m_pFrenzyDialog->Create(IDD_FRENZY, this);
     m_pFrenzyDialog->SetOnClickCallback([this]() {
         if (m_pDoc) {
-            m_pDoc->GetGameCore().ActivateFrenzy(7.0, 77.0); // 7x multiplier for 77s
+            m_pDoc->GetGameCore().ActivateFrenzy(7.0, 20.0);
         }
     });
     m_pFrenzyDialog->ShowWindow(SW_HIDE);
