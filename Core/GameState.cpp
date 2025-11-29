@@ -83,37 +83,49 @@ GameState::GameState()
         UpgradeData& upgrade = upgrades[upgradeId];
         double cost = upgrade.GetCurrentCost();
 
-        if (totalClicks >= cost) {
-            totalClicks -= cost;
-            upgrade.owned++;
-        }
+        // 구매 가능한지 확인
+        if (totalClicks < cost) return;
+
+        // 구매 확정
+        totalClicks -= cost;
+        upgrade.owned++;
     }
 
     void GameState::PurchaseSpecialUpgrade(int specialUpgradeId) {
-        if (specialUpgradeId < 0 || specialUpgradeId >= static_cast<int>(specialUpgrades.size())) {
-            return;
-        }
+        // Panic 방지
+        if (specialUpgradeId < 0) return;
+        if (specialUpgradeId >= static_cast<int>(specialUpgrades.size())) return;
 
         SpecialUpgradeData& upgrade = specialUpgrades[specialUpgradeId];
-        
-        // 이미 구매한 경우 리턴
-        if (upgrade.isPurchased) {
-            return;
-        }
 
-        if (totalClicks >= upgrade.cost) {
-            totalClicks -= upgrade.cost;
-            upgrade.isPurchased = true;
-        }
+        // 구매 가능한지 확인
+        if (upgrade.isPurchased) return;
+        if (totalClicks < upgrade.cost) return;
+
+        // 구매 확정
+        totalClicks -= upgrade.cost;
+        upgrade.isPurchased = true;
     }
 
     double GameState::GetAutoProductionRate() const {
-        double rate = 0.0;
+        double totalRate = 0.0;
+        
         for (const auto& upgrade : upgrades) {
-            rate += upgrade.GetTotalProduction();
+            double upgradeRate = upgrade.GetTotalProduction();
+            
+            // 특별 업그레이드 효과 적용
+            double multiplier = 1.0;
+            for (const auto& special : specialUpgrades) {
+                if (special.isPurchased) continue;
+                if (special.category != upgrade.name) continue;
+
+                multiplier *= 2.0;
+            }
+            
+            totalRate += upgradeRate * multiplier;
         }
         
-        return rate;
+        return totalRate;
     }
 
     void GameState::Reset() {
