@@ -156,7 +156,4 @@ void CClickerButton::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CClickerButton::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
-	// 더블 클릭도 일반 클릭처럼 처리 (빠른 클릭 시 씹힘 방지)
-	OnLButtonUp(nFlags, point);
-	OnLButtonUp(nFlags, point);
 }
