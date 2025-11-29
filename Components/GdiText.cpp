@@ -16,9 +16,7 @@ GdiText::GdiText()
 
 GdiText::~GdiText()
 {
-	// Dispose loaded font
-	if (m_pFont)
-	{
+	if (m_pFont) {
 		delete m_pFont;
 		m_pFont = nullptr;
 	}
@@ -26,9 +24,7 @@ GdiText::~GdiText()
 
 void GdiText::SetFont(const CString& fontFamily, float size, Gdiplus::FontStyle style)
 {
-	// Dispose previous font
-	if (m_pFont)
-	{
+	if (m_pFont) {
 		delete m_pFont;
 	}
 	
@@ -42,10 +38,9 @@ void GdiText::Draw(Gdiplus::Graphics& graphics, float x, float y)
 
 void GdiText::Draw(Gdiplus::Graphics& graphics, const Gdiplus::PointF& point)
 {
-	// To avoid crash
-	// Maybe this won't happen
-	if (!m_pFont)
+	if (!m_pFont) {
 		return;
+	}
 
 	Gdiplus::StringFormat format;
 	format.SetAlignment(m_alignment);
@@ -56,32 +51,25 @@ void GdiText::Draw(Gdiplus::Graphics& graphics, const Gdiplus::PointF& point)
 
 void GdiText::Draw(Gdiplus::Graphics& graphics, const Gdiplus::RectF& rect)
 {
-	if (!m_pFont)
+	if (!m_pFont) {
 		return;
+	}
 
 	Gdiplus::StringFormat format;
 	format.SetAlignment(m_alignment);
 	format.SetLineAlignment(m_lineAlignment);
 
-	// ì‚¬ê°í˜• ì˜ì—­ì— ê·¸ë¦´ ë•ŒëŠ” ì™¼ìª½ ìœ„ ì ì„ ê¸°ì¤€ìœ¼ë¡œ
 	Gdiplus::PointF point(rect.X, rect.Y);
 	
-	// ì¤‘ì•™ ì •ë ¬ì´ë©´ ì‚¬ê°í˜• ì¤‘ì‹¬ìœ¼ë¡œ
-	if (m_alignment == Gdiplus::StringAlignmentCenter)
-	{
+	if (m_alignment == Gdiplus::StringAlignmentCenter) {
 		point.X = rect.X + rect.Width / 2.0f;
-	}
-	else if (m_alignment == Gdiplus::StringAlignmentFar)
-	{
+	} else if (m_alignment == Gdiplus::StringAlignmentFar) {
 		point.X = rect.X + rect.Width;
 	}
 
-	if (m_lineAlignment == Gdiplus::StringAlignmentCenter)
-	{
+	if (m_lineAlignment == Gdiplus::StringAlignmentCenter) {
 		point.Y = rect.Y + rect.Height / 2.0f;
-	}
-	else if (m_lineAlignment == Gdiplus::StringAlignmentFar)
-	{
+	} else if (m_lineAlignment == Gdiplus::StringAlignmentFar) {
 		point.Y = rect.Y + rect.Height;
 	}
 
@@ -93,19 +81,14 @@ void GdiText::DrawWithShadow(Gdiplus::Graphics& graphics, const Gdiplus::PointF&
 	Gdiplus::SolidBrush shadowBrush(m_shadowColor);
 	Gdiplus::SolidBrush textBrush(m_color);
 
-	switch (m_shadowStyle)
-	{
-	case ShadowStyle::DropShadow:
-	{
-		// ë“œë¡­ ì„€ë„ìš°: ì˜¤ë¥¸ìª½ ì•„ëž˜ì— ê·¸ë¦¼ìž
+	switch (m_shadowStyle) {
+	case ShadowStyle::DropShadow: {
 		Gdiplus::PointF shadowPoint(point.X + m_shadowOffsetX, point.Y + m_shadowOffsetY);
 		graphics.DrawString(m_text, -1, m_pFont, shadowPoint, format, &shadowBrush);
 		break;
 	}
 
-	case ShadowStyle::Outline:
-	{
-		// ì™¸ê³½ì„ : 4ë°©í–¥ì— ê·¸ë¦¼ìž
+	case ShadowStyle::Outline: {
 		graphics.DrawString(m_text, -1, m_pFont, Gdiplus::PointF(point.X - m_shadowOffsetX, point.Y), format, &shadowBrush);
 		graphics.DrawString(m_text, -1, m_pFont, Gdiplus::PointF(point.X + m_shadowOffsetX, point.Y), format, &shadowBrush);
 		graphics.DrawString(m_text, -1, m_pFont, Gdiplus::PointF(point.X, point.Y - m_shadowOffsetY), format, &shadowBrush);
@@ -115,10 +98,8 @@ void GdiText::DrawWithShadow(Gdiplus::Graphics& graphics, const Gdiplus::PointF&
 
 	case ShadowStyle::None:
 	default:
-		// ê·¸ë¦¼ìž ì—†ìŒ
 		break;
 	}
 
-	// ì‹¤ì œ í…ìŠ¤íŠ¸ ê·¸ë¦¬ê¸°
 	graphics.DrawString(m_text, -1, m_pFont, point, format, &textBrush);
 }
