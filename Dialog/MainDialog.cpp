@@ -33,38 +33,33 @@ CMainDialog::CMainDialog(CWnd* pParent /*=nullptr*/)
 
 CMainDialog::~CMainDialog()
 {
-	if (m_pShopDialog)
-	{
+	if (m_pShopDialog) {
 		if (m_pShopDialog->GetSafeHwnd())
 			m_pShopDialog->DestroyWindow();
 		delete m_pShopDialog;
 		m_pShopDialog = nullptr;
 	}
 	
-	if (m_pUpgradeDialog)
-	{
+	if (m_pUpgradeDialog) {
 		if (m_pUpgradeDialog->GetSafeHwnd())
 			m_pUpgradeDialog->DestroyWindow();
 		delete m_pUpgradeDialog;
 		m_pUpgradeDialog = nullptr;
 	}
 
-    if (m_pFrenzyDialog)
-    {
+    if (m_pFrenzyDialog) {
         if (m_pFrenzyDialog->GetSafeHwnd())
             m_pFrenzyDialog->DestroyWindow();
         delete m_pFrenzyDialog;
         m_pFrenzyDialog = nullptr;
     }
 	
-	if (m_pDoc)
-	{
+	if (m_pDoc) {
 		delete m_pDoc;
 		m_pDoc = nullptr;
 	}
 	
-	if (m_pBackgroundImage)
-	{
+	if (m_pBackgroundImage) {
 		delete m_pBackgroundImage;
 		m_pBackgroundImage = nullptr;
 	}
@@ -77,7 +72,6 @@ void CMainDialog::DoDataExchange(CDataExchange* pDX)
 
 void CMainDialog::OnGdiInitialize()
 {
-
 	// 윈도우 스타일 변경 (레이어드 윈도우, WS_CAPTION은 MFC 내부 처리를 위해 유지)
 	ModifyStyle(WS_THICKFRAME | WS_SYSMENU, 0);
 	ModifyStyleEx(0, WS_EX_LAYERED);
@@ -92,8 +86,7 @@ void CMainDialog::OnGdiInitialize()
 	// GDI+ 배경 이미지 로드
 	CString imagePath = PathResolver::GetInstance().GetResourcePath(_T("Main\\Background.png"));
 	m_pBackgroundImage = Gdiplus::Image::FromFile(imagePath);
-	if (m_pBackgroundImage == nullptr || m_pBackgroundImage->GetLastStatus() != Gdiplus::Ok)
-	{
+	if (m_pBackgroundImage == nullptr || m_pBackgroundImage->GetLastStatus() != Gdiplus::Ok) {
 		CString msg;
 		msg.Format(_T("배경 이미지를 로드할 수 없습니다!\n경로: %s"), imagePath);
 		MessageBox(msg, _T("오류"), MB_OK | MB_ICONERROR);
@@ -208,8 +201,7 @@ void CMainDialog::OnGdiInitialize()
 	
 	// 자동 저장 파일 경로 설정
 	TCHAR appDataPath[MAX_PATH];
-	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, appDataPath)))
-	{
+	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, appDataPath))) {
 		m_saveFilePath.Format(_T("%s\\ClickerGame"), appDataPath);
 		// 디렉토리 생성
 		CreateDirectory(m_saveFilePath, NULL);
@@ -262,15 +254,13 @@ END_MESSAGE_MAP()
 void CMainDialog::OnUpdateLogic(float deltaTime)
 {
 	// GameCore 업데이트 (자동 생산)
-	if (m_pDoc)
-	{
+	if (m_pDoc) {
 		m_pDoc->GetGameCore().Update(deltaTime);
 	}
 
     // Frenzy Spawning Logic
     if (m_frenzySpawnTimer > 0) {
         m_frenzySpawnTimer -= deltaTime;
-        // TRACE(_T("Frenzy Timer: %.2f\n"), m_frenzySpawnTimer); // Too spammy, maybe log every integer change?
         if (m_frenzySpawnTimer <= 0) {
             TRACE(_T("Frenzy Timer Reached 0! Spawning Dialog...\n"));
             SpawnFrenzyDialog();
@@ -281,13 +271,11 @@ void CMainDialog::OnUpdateLogic(float deltaTime)
     }
 	
 	// 파티클 시스템 업데이트
-	// 파티클 시스템 업데이트
 	m_particleSystem.Update(deltaTime);
 
 	// 텍스트 업데이트
 	// 1. 재화 텍스트
-	if (m_pDoc)
-	{
+	if (m_pDoc) {
 		CString currencyText;
 		currencyText.Format(_T("%.0f ZPC"), m_pDoc->GetGameCore().GetTotalClicks());
 		m_currencyText.SetText(currencyText);
@@ -295,14 +283,11 @@ void CMainDialog::OnUpdateLogic(float deltaTime)
 		// 초당 생산량 텍스트
 		double productionRate = m_pDoc->GetGameCore().GetAutoProductionRate();
 		CString productionText;
-		if (m_pDoc->GetGameCore().IsFrenzyActive())
-		{
+		if (m_pDoc->GetGameCore().IsFrenzyActive()) {
 			double multiplier = m_pDoc->GetGameCore().GetFrenzyMultiplier();
 			productionText.Format(_T("%.1f ZPC/s (x%.0f)"), productionRate, multiplier);
 			m_productionText.SetColor(255, 255, 100, 100); // Frenzy 활성 시 빨간색
-		}
-		else
-		{
+		} else {
 			productionText.Format(_T("%.1f ZPC/s"), productionRate);
 			m_productionText.SetColor(255, 200, 220, 255); // 기본 색상
 		}
@@ -326,8 +311,7 @@ void CMainDialog::OnUpdateLogic(float deltaTime)
 void CMainDialog::OnRenderContent(Gdiplus::Graphics& graphics, float deltaTime)
 {
 	// 배경 이미지
-	if (m_pBackgroundImage && m_pBackgroundImage->GetLastStatus() == Gdiplus::Ok)
-	{
+	if (m_pBackgroundImage && m_pBackgroundImage->GetLastStatus() == Gdiplus::Ok) {
 		graphics.DrawImage(m_pBackgroundImage, 0, 0, 800, 600);
 	}
 	
@@ -365,8 +349,7 @@ BOOL CMainDialog::OnEraseBkgnd(CDC* pDC)
 
 void CMainDialog::OnTimer(UINT_PTR nIDEvent)
 {
-	if (nIDEvent == m_nAutoSaveTimerID)
-	{
+	if (nIDEvent == m_nAutoSaveTimerID) {
 		// 30초마다 자동 저장
 		SaveGameState();
 	}
@@ -376,8 +359,7 @@ void CMainDialog::OnTimer(UINT_PTR nIDEvent)
 
 void CMainDialog::OnDestroy()
 {
-	if (m_nAutoSaveTimerID)
-	{
+	if (m_nAutoSaveTimerID) {
 		KillTimer(m_nAutoSaveTimerID);
 		m_nAutoSaveTimerID = 0;
 	}
@@ -388,8 +370,7 @@ void CMainDialog::OnDestroy()
 void CMainDialog::OnClose()
 {
 	// 자동 저장 타이머 정리
-	if (m_nAutoSaveTimerID)
-	{
+	if (m_nAutoSaveTimerID) {
 		KillTimer(m_nAutoSaveTimerID);
 		m_nAutoSaveTimerID = 0;
 	}
@@ -398,8 +379,7 @@ void CMainDialog::OnClose()
 	SaveGameState();
 	
 	// 리소스 정리
-	if (m_pBackgroundImage)
-	{
+	if (m_pBackgroundImage) {
 		delete m_pBackgroundImage;
 		m_pBackgroundImage = nullptr;
 	}
@@ -420,8 +400,7 @@ void CMainDialog::OnCloseButtonClick()
 void CMainDialog::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// 드래그 중이면 창 이동
-	if (m_bDragging)
-	{
+	if (m_bDragging) {
 		CPoint screenPoint = point;
 		ClientToScreen(&screenPoint);
 		
@@ -440,15 +419,13 @@ void CMainDialog::OnMouseMove(UINT nFlags, CPoint point)
 void CMainDialog::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// 상단 영역(0~40px)을 클릭하면 드래그 시작
-	if (point.y >= 0 && point.y <= 40)
-	{
+	if (point.y >= 0 && point.y <= 40) {
 		// 닫기 버튼 영역은 제외
 		CRect closeRect;
 		m_btnClose.GetWindowRect(&closeRect);
 		ScreenToClient(&closeRect);
 		
-		if (!closeRect.PtInRect(point))
-		{
+		if (!closeRect.PtInRect(point)) {
 			m_bDragging = true;
 			m_dragStartPoint = point;
 			SetCapture();
@@ -465,16 +442,13 @@ void CMainDialog::OnLButtonDown(UINT nFlags, CPoint point)
 	ScreenToClient(&upgradeRect);
 	ScreenToClient(&settingsRect);
 	
-	if (!shopRect.PtInRect(point))
-	{
+	if (!shopRect.PtInRect(point)) {
 		m_btnShop.Deselect();
 	}
-	if (!upgradeRect.PtInRect(point))
-	{
+	if (!upgradeRect.PtInRect(point)) {
 		m_btnUpgrade.Deselect();
 	}
-	if (!settingsRect.PtInRect(point))
-	{
+	if (!settingsRect.PtInRect(point)) {
 		m_btnSettings.Deselect();
 	}
 	
@@ -484,8 +458,7 @@ void CMainDialog::OnLButtonDown(UINT nFlags, CPoint point)
 void CMainDialog::OnVirusButtonClick()
 {
 	// 바이러스 버튼 클릭 시 클릭 수 증가
-	if ( m_pDoc )
-	{
+	if ( m_pDoc ) {
 		m_pDoc->GetGameCore().PerformClick();
 
 		// [추가] 리소스 사운드 재생 코드
@@ -525,8 +498,7 @@ void CMainDialog::LoadGameState()
 void CMainDialog::OnShopButtonClick()
 {
 	// 상점 버튼 클릭 시 다른 아이콘 버튼 선택 해제
-	if (m_btnShop.IsSelected())
-	{
+	if (m_btnShop.IsSelected()) {
 		m_btnUpgrade.Deselect();
 		m_btnSettings.Deselect();
 	}
@@ -543,8 +515,7 @@ void CMainDialog::OnShopButtonTrigger()
 	TRACE(_T("상점 버튼 더블클릭 - 상점 열기\n"));
 	
 	// 이미 열려있으면 포커스만 주기
-	if (m_pShopDialog && m_pShopDialog->GetSafeHwnd())
-	{
+	if (m_pShopDialog && m_pShopDialog->GetSafeHwnd()) {
 		m_pShopDialog->SetForegroundWindow();
 		return;
 	}
@@ -554,8 +525,7 @@ void CMainDialog::OnShopButtonTrigger()
 	m_pShopDialog->SetDocument(m_pDoc);
 	
 	// Modeless 다이얼로그 생성
-	if (m_pShopDialog->Create(IDD_SHOP, this))
-	{
+	if (m_pShopDialog->Create(IDD_SHOP, this)) {
 		// 메인 창 오른쪽에 위치 설정
 		CRect mainRect;
 		GetWindowRect(&mainRect);
@@ -566,9 +536,7 @@ void CMainDialog::OnShopButtonTrigger()
 		
 		m_pShopDialog->SetWindowPos(nullptr, shopX, shopY, 200, 600, SWP_NOZORDER);
 		m_pShopDialog->ShowWindow(SW_SHOW);
-	}
-	else
-	{
+	} else {
 		delete m_pShopDialog;
 		m_pShopDialog = nullptr;
 	}
@@ -577,8 +545,7 @@ void CMainDialog::OnShopButtonTrigger()
 void CMainDialog::OnUpgradeButtonClick()
 {
 	// 업그레이드 버튼 클릭 시 다른 아이콘 버튼 선택 해제
-	if (m_btnUpgrade.IsSelected())
-	{
+	if (m_btnUpgrade.IsSelected()) {
 		m_btnShop.Deselect();
 		m_btnSettings.Deselect();
 	}
@@ -595,8 +562,7 @@ void CMainDialog::OnUpgradeButtonTrigger()
 	TRACE(_T("업그레이드 버튼 더블클릭 - 업그레이드 열기\n"));
 	
 	// 이미 열려있으면 포커스만 주기
-	if (m_pUpgradeDialog && m_pUpgradeDialog->GetSafeHwnd())
-	{
+	if (m_pUpgradeDialog && m_pUpgradeDialog->GetSafeHwnd()) {
 		m_pUpgradeDialog->SetForegroundWindow();
 		return;
 	}
@@ -606,8 +572,7 @@ void CMainDialog::OnUpgradeButtonTrigger()
 	m_pUpgradeDialog->SetDocument(m_pDoc);
 	
 	// Modeless 다이얼로그 생성
-	if (m_pUpgradeDialog->Create(IDD_UPGRADE, this))
-	{
+	if (m_pUpgradeDialog->Create(IDD_UPGRADE, this)) {
 		// 메인 창 왼쪽에 위치 설정
 		CRect mainRect;
 		GetWindowRect(&mainRect);
@@ -618,9 +583,7 @@ void CMainDialog::OnUpgradeButtonTrigger()
 		
 		m_pUpgradeDialog->SetWindowPos(nullptr, upgradeX, upgradeY, 383, 600, SWP_NOZORDER);
 		m_pUpgradeDialog->ShowWindow(SW_SHOW);
-	}
-	else
-	{
+	} else {
 		delete m_pUpgradeDialog;
 		m_pUpgradeDialog = nullptr;
 	}
@@ -629,8 +592,7 @@ void CMainDialog::OnUpgradeButtonTrigger()
 void CMainDialog::OnSettingsButtonClick()
 {
 	// 설정 버튼 클릭 시 다른 아이콘 버튼 선택 해제
-	if ( m_btnSettings.IsSelected() )
-	{
+	if ( m_btnSettings.IsSelected() ) {
 		m_btnShop.Deselect();
 		m_btnUpgrade.Deselect();
 	}
@@ -645,10 +607,8 @@ void CMainDialog::OnSettingsButtonTrigger()
 {
 	// 설정 버튼 더블클릭 시 (트리거) -> 게임 초기화 기능 수행
 	// 정말로 초기화할 것인지 사용자에게 확인
-	if ( AfxMessageBox(L"정말로 게임 데이터를 초기화하시겠습니까?\n모든 진행 상황이 사라집니다.", MB_YESNO | MB_ICONQUESTION) == IDYES )
-	{
-		if ( m_pDoc )
-		{
+	if ( AfxMessageBox(L"정말로 게임 데이터를 초기화하시겠습니까?\n모든 진행 상황이 사라집니다.", MB_YESNO | MB_ICONQUESTION) == IDYES ) {
+		if ( m_pDoc ) {
 			// 1. 게임 코어 리셋 (데이터 초기화)
 			m_pDoc->GetGameCore().Reset();
 
@@ -665,8 +625,7 @@ void CMainDialog::OnSettingsButtonTrigger()
 
 void CMainDialog::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	if (m_bDragging)
-	{
+	if (m_bDragging) {
 		m_bDragging = false;
 		ReleaseCapture();
 	}
@@ -676,8 +635,7 @@ void CMainDialog::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CMainDialog::SpawnFrenzyDialog()
 {
-    if (m_pFrenzyDialog && m_pFrenzyDialog->GetSafeHwnd())
-    {
+    if (m_pFrenzyDialog && m_pFrenzyDialog->GetSafeHwnd()) {
         // Random position within MainDialog
         CRect rect;
         GetClientRect(&rect);
@@ -693,9 +651,7 @@ void CMainDialog::SpawnFrenzyDialog()
 
         m_pFrenzyDialog->SetWindowPos(&CWnd::wndTop, x, y, 0, 0, SWP_NOSIZE | SWP_SHOWWINDOW);
         m_pFrenzyDialog->SetTimer(1, 13000, nullptr); // Reset disappear timer
-    }
-    else
-    {
+    } else {
         TRACE(_T("Failed to spawn Frenzy Dialog: Invalid pointer or HWND\n"));
     }
 }

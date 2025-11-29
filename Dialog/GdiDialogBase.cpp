@@ -1,4 +1,5 @@
-﻿// GdiDialogBase.cpp: êµ¬í˜„ íŒŒì¼
+﻿```cpp
+// GdiDialogBase.cpp: Implementation file
 //
 
 #include "pch.h"
@@ -17,11 +18,12 @@ GdiDialogBase::GdiDialogBase(UINT nIDTemplate, CWnd* pParent /*=nullptr*/)
 
 GdiDialogBase::~GdiDialogBase()
 {
-	// ë²„í¼ ì •ë¦¬
-	if (m_memBitmap.GetSafeHandle())
+	if (m_memBitmap.GetSafeHandle()) {
 		m_memBitmap.DeleteObject();
-	if (m_memDC.GetSafeHdc())
+	}
+	if (m_memDC.GetSafeHdc()) {
 		m_memDC.DeleteDC();
+	}
 }
 
 void GdiDialogBase::DoDataExchange(CDataExchange* pDX)
@@ -33,10 +35,10 @@ BOOL GdiDialogBase::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// íŒŒìƒ í´ëž˜ìŠ¤ ì´ˆê¸°í™” í˜¸ì¶œ
+	// Call derived class initialization
 	OnGdiInitialize();
 
-	// 60 FPS íƒ€ì´ë¨¸ ì‹œìž‘ (16ms)
+	// Start 60 FPS timer (16ms)
 	m_nTimerID = SetTimer(1, 16, nullptr);
 	m_lastFrameTime = GetTickCount();
 
@@ -50,22 +52,22 @@ BEGIN_MESSAGE_MAP(GdiDialogBase, CDialogEx)
 	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
-// GdiDialogBase ë©”ì‹œì§€ ì²˜ë¦¬ê¸°
-
-
+// GdiDialogBase Message Handlers
 
 void GdiDialogBase::InitializeRenderBuffer(int width, int height)
 {
 	m_bufferWidth = width;
 	m_bufferHeight = height;
 
-	// ê¸°ì¡´ ë²„í¼ ì •ë¦¬
-	if (m_memBitmap.GetSafeHandle())
+	// Cleanup existing buffer
+	if (m_memBitmap.GetSafeHandle()) {
 		m_memBitmap.DeleteObject();
-	if (m_memDC.GetSafeHdc())
+	}
+	if (m_memDC.GetSafeHdc()) {
 		m_memDC.DeleteDC();
+	}
 
-	// ìƒˆ ë²„í¼ ìƒì„±
+	// Create new buffer
 	CClientDC dc(this);
 	m_memDC.CreateCompatibleDC(&dc);
 	m_memBitmap.CreateCompatibleBitmap(&dc, width, height);
@@ -74,7 +76,7 @@ void GdiDialogBase::InitializeRenderBuffer(int width, int height)
 
 BOOL GdiDialogBase::OnEraseBkgnd(CDC* pDC)
 {
-	// ê¹œë°•ìž„ ë°©ì§€
+	// Prevent flickering
 	return TRUE;
 }
 
@@ -82,17 +84,15 @@ void GdiDialogBase::OnPaint()
 {
 	CPaintDC dc(this);
 
-	// ì¤‘ì•™ ë Œë”ë§ ë²„í¼ë¥¼ í™”ë©´ì— ë³µì‚¬ë§Œ ìˆ˜í–‰
-	if (m_memDC.GetSafeHdc() && m_bufferWidth > 0 && m_bufferHeight > 0)
-	{
+	// Copy the central rendering buffer to the screen
+	if (m_memDC.GetSafeHdc() && m_bufferWidth > 0 && m_bufferHeight > 0) {
 		dc.BitBlt(0, 0, m_bufferWidth, m_bufferHeight, &m_memDC, 0, 0, SRCCOPY);
 	}
 }
 
 void GdiDialogBase::OnTimer(UINT_PTR nIDEvent)
 {
-	if (nIDEvent == m_nTimerID)
-	{
+	if (nIDEvent == m_nTimerID) {
 		RenderFrame();
 	}
 
@@ -101,8 +101,7 @@ void GdiDialogBase::OnTimer(UINT_PTR nIDEvent)
 
 void GdiDialogBase::OnDestroy()
 {
-	if (m_nTimerID)
-	{
+	if (m_nTimerID) {
 		KillTimer(m_nTimerID);
 		m_nTimerID = 0;
 	}
@@ -112,30 +111,32 @@ void GdiDialogBase::OnDestroy()
 
 void GdiDialogBase::RenderFrame()
 {
-	if (!m_memDC.GetSafeHdc() || m_bufferWidth == 0 || m_bufferHeight == 0)
+	if (!m_memDC.GetSafeHdc() || m_bufferWidth == 0 || m_bufferHeight == 0) {
 		return;
+	}
 
-	// deltaTime ê³„ì‚° (ì´ˆ ë‹¨ìœ„)
+	// Calculate deltaTime (in seconds)
 	DWORD currentTime = GetTickCount();
 	float deltaTime = (currentTime - m_lastFrameTime) / 1000.0f;
 	m_lastFrameTime = currentTime;
 
-	// ì—…ë°ì´íŠ¸ ë¡œì§ í˜¸ì¶œ
+	// Call update logic
 	OnUpdateLogic(deltaTime);
 
-	// íˆ¬ëª… í‚¤ ìƒ‰ìƒìœ¼ë¡œ ë°°ê²½ ì±„ìš°ê¸° (RGB(255, 0, 255) ë§ˆì  íƒ€)
+	// Fill background with transparent key color (RGB(255, 0, 255) Magenta)
 	m_memDC.FillSolidRect(0, 0, m_bufferWidth, m_bufferHeight, RGB(255, 0, 255));
 
-	// GDI+ Graphics ìƒì„±
+	// Create GDI+ Graphics
 	Gdiplus::Graphics graphics(m_memDC.GetSafeHdc());
 	graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
 	graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
 	graphics.SetTextRenderingHint(Gdiplus::TextRenderingHintAntiAlias);
 	graphics.SetCompositingMode(Gdiplus::CompositingModeSourceOver);
 
-	// íŒŒìƒ í´ëž˜ìŠ¤ì˜ ë Œë”ë§ í˜¸ì¶œ
+	// Call derived class rendering
 	OnRenderContent(graphics, deltaTime);
 
-	// í™”ë©´ ê°±ì‹ 
+	// Update screen
 	InvalidateRect(nullptr, FALSE);
 }
+```

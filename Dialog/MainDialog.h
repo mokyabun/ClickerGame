@@ -60,7 +60,6 @@ private:
 	CString m_saveFilePath;
 	
 	// Modeless 다이얼로그
-	// Modeless 다이얼로그
 	CShopDialog* m_pShopDialog;
 	CUpgradeDialog* m_pUpgradeDialog;
     CFrenzyDialog* m_pFrenzyDialog;
