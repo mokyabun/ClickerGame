@@ -1,4 +1,4 @@
-﻿// ShopDialog.cpp: êµ¬í˜„ íŒŒì¼
+﻿// ShopDialog.cpp: 구현 파일
 //
 
 #include "pch.h"
@@ -9,7 +9,7 @@
 #include "PathResolver.h"
 
 
-// CShopDialog ëŒ€í™” ìƒìž
+// CShopDialog 대화 상자
 
 IMPLEMENT_DYNAMIC(CShopDialog, GdiDialogBase)
 
@@ -24,18 +24,14 @@ CShopDialog::CShopDialog(CWnd* pParent /*=nullptr*/)
 
 CShopDialog::~CShopDialog()
 {
-	for (auto* pBtn : m_shopButtons)
-	{
-		if (pBtn)
-		{
+	for (auto* pBtn : m_shopButtons) {
+		if (pBtn) {
 			delete pBtn;
 		}
 	}
 	m_shopButtons.clear();
 
-	// ë°°ê²½ ì´ë¯¸ì§€ ì •ë¦¬
-	if (m_pBackgroundImage)
-	{
+	if (m_pBackgroundImage) {
 		delete m_pBackgroundImage;
 		m_pBackgroundImage = nullptr;
 	}
@@ -63,8 +59,7 @@ void CShopDialog::OnGdiInitialize()
 
 	CString imagePath = PathResolver::GetInstance().GetResourcePath(_T("Shop\\Background.png"));
 	m_pBackgroundImage = Gdiplus::Image::FromFile(imagePath);
-	if (m_pBackgroundImage == nullptr || m_pBackgroundImage->GetLastStatus() != Gdiplus::Ok)
-	{
+	if (m_pBackgroundImage == nullptr || m_pBackgroundImage->GetLastStatus() != Gdiplus::Ok) {
 		CString msg;
 		msg.Format(_T("상점 배경 이미지를 로드할 수 없습니다!\n경로: %s"), imagePath);
 		MessageBox(msg, _T("오류"), MB_OK | MB_ICONERROR);
@@ -86,13 +81,10 @@ void CShopDialog::OnGdiInitialize()
 	const int spacingY = 48;
 	const int columns = 1;
 
-	// To prevent crash
-	if (m_pDoc)
-	{
+	if (m_pDoc) {
 		const auto& upgrades = m_pDoc->GetGameCore().GetUpgrades();
 
-		for (int i = 0; i < upgrades.size(); i++)
-		{
+		for (int i = 0; i < upgrades.size(); i++) {
 			int col = i % columns;
 			int row = i / columns;
 			int x = startX;
@@ -157,7 +149,7 @@ BEGIN_MESSAGE_MAP(CShopDialog, GdiDialogBase)
 END_MESSAGE_MAP()
 
 
-// CShopDialog ë©”ì‹œì§€ ì²˜ë¦¬ê¸°
+// CShopDialog 메시지 처리기
 
 BOOL CShopDialog::OnEraseBkgnd(CDC* pDC)
 {
@@ -171,14 +163,11 @@ void CShopDialog::OnDestroy()
 
 void CShopDialog::OnClose()
 {
-	// ë¦¬ì†ŒìŠ¤ ì •ë¦¬
-	if (m_pBackgroundImage)
-	{
+	if (m_pBackgroundImage) {
 		delete m_pBackgroundImage;
 		m_pBackgroundImage = nullptr;
 	}
 
-	// Modeless ë‹¤ì´ì–¼ë¡œê·¸ì´ë¯€ë¡œ DestroyWindow í˜¸ì¶œ
 	DestroyWindow();
 }
 
@@ -190,17 +179,14 @@ void CShopDialog::PostNcDestroy()
 void CShopDialog::OnUpdateLogic(float deltaTime)
 {
 	CPoint cursorPos;
-	if (GetCursorPos(&cursorPos))
-	{
+	if (GetCursorPos(&cursorPos)) {
 		ScreenToClient(&cursorPos);
 		UpdateHoveredItem(cursorPos);
 	}
 
-	if (m_hoveredItemId >= 0 && m_pDoc)
-	{
+	if (m_hoveredItemId >= 0 && m_pDoc) {
 		const UpgradeData* pUpgrade = m_pDoc->GetGameCore().GetUpgrade(m_hoveredItemId);
-		if (pUpgrade)
-		{
+		if (pUpgrade) {
 			m_tooltipTitle.SetText(CString(pUpgrade->name.c_str()));
 			
 			CString stats;
@@ -214,25 +200,20 @@ void CShopDialog::OnUpdateLogic(float deltaTime)
 
 void CShopDialog::OnRenderContent(Gdiplus::Graphics& graphics, float deltaTime)
 {
-	if (m_pBackgroundImage && m_pBackgroundImage->GetLastStatus() == Gdiplus::Ok)
-	{
+	if (m_pBackgroundImage && m_pBackgroundImage->GetLastStatus() == Gdiplus::Ok) {
 		graphics.DrawImage(m_pBackgroundImage, 0, 0, 200, 600);
 	}
 
 	m_btnClose.Draw(graphics, deltaTime);
 
-	for (size_t i = 0; i < m_shopButtons.size(); i++)
-	{
+	for (size_t i = 0; i < m_shopButtons.size(); i++) {
 		auto* pBtn = m_shopButtons[i];
-		if (pBtn && pBtn->IsWindowVisible())
-		{
+		if (pBtn && pBtn->IsWindowVisible()) {
 			pBtn->Draw(graphics, deltaTime);
 
-			if (m_pDoc)
-			{
+			if (m_pDoc) {
 				const UpgradeData* pUpgrade = m_pDoc->GetGameCore().GetUpgrade((int)i);
-				if (pUpgrade)
-				{
+				if (pUpgrade) {
 					CRect btnRect;
 					pBtn->GetWindowRect(&btnRect);
 					ScreenToClient(&btnRect);
@@ -256,8 +237,7 @@ void CShopDialog::OnRenderContent(Gdiplus::Graphics& graphics, float deltaTime)
 		}
 	}
 
-	if (m_hoveredItemId >= 0 && m_pDoc)
-	{
+	if (m_hoveredItemId >= 0 && m_pDoc) {
 		m_tooltipTitle.Draw(graphics, 100.0f, 38.0f);
 		m_tooltipStats.Draw(graphics, 100.0f, 53.0f);
 		m_tooltipDesc.Draw(graphics, 100.0f, 68.0f);
@@ -266,18 +246,16 @@ void CShopDialog::OnRenderContent(Gdiplus::Graphics& graphics, float deltaTime)
 
 void CShopDialog::OnItemButtonClick(int itemId)
 {
-	if (!m_pDoc)
+	if (!m_pDoc) {
 		return;
+	}
 
 	bool success = m_pDoc->GetGameCore().PurchaseUpgrade(itemId);
 	
-	if (success)
-	{
+	if (success) {
 		TRACE(_T("아이템 %d 구매 성공!\n"), itemId);
 
-	}
-	else
-	{
+	} else {
 		TRACE(_T("아이템 %d 구매 실패 - 재화 부족\n"), itemId);
 		MessageBeep(MB_ICONEXCLAMATION);
 	}
@@ -292,21 +270,14 @@ void CShopDialog::OnCloseButtonClick()
 
 void CShopDialog::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	if (point.y >= 0 && point.y <= 40)
-	{
-		// ë‹«ê¸° ë²„íŠ¼ ì˜ì—­ì€ ì œì™¸
+	if (point.y >= 0 && point.y <= 40) {
 		CRect closeRect;
 		m_btnClose.GetWindowRect(&closeRect);
 		ScreenToClient(&closeRect);
 		
-		if (!closeRect.PtInRect(point))
-		{
+		if (!closeRect.PtInRect(point)) {
 			m_bDragging = true;
-			
-			// ë§ˆìš°ìŠ¤ì˜ ì°½ ë‚´ ìƒëŒ€ ìœ„ì¹˜ ì €ìž¥
 			m_dragStartPoint = point;
-			
-			// ë§ˆìš°ìŠ¤ ìº¡ì²˜
 			SetCapture();
 		}
 	}
@@ -316,11 +287,8 @@ void CShopDialog::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CShopDialog::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	if (m_bDragging)
-	{
+	if (m_bDragging) {
 		m_bDragging = false;
-		
-		// ë§ˆìš°ìŠ¤ ìº¡ì²˜ í•´ì œ
 		ReleaseCapture();
 	}
 	
@@ -329,9 +297,7 @@ void CShopDialog::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CShopDialog::OnMouseMove(UINT nFlags, CPoint point)
 {
-	// ë“œëž˜ê·¸ ì¤‘ì´ë©´ ì°½ ì´ë™
-	if (m_bDragging)
-	{
+	if (m_bDragging) {
 		CPoint screenPoint = point;
 		ClientToScreen(&screenPoint);
 		
@@ -342,10 +308,7 @@ void CShopDialog::OnMouseMove(UINT nFlags, CPoint point)
 		int newY = screenPoint.y - m_dragStartPoint.y;
 		
 		SetWindowPos(nullptr, newX, newY, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-	}
-	else
-	{
-		// í•­ìƒ í˜¸ë²„ ìƒíƒœ ì—…ë°ì´íŠ¸
+	} else {
 		UpdateHoveredItem(point);
 	}
 	
@@ -356,23 +319,19 @@ void CShopDialog::UpdateHoveredItem(CPoint point)
 {
 	int newHoveredId = -1;
 
-	for (size_t i = 0; i < m_shopButtons.size(); i++)
-	{
+	for (size_t i = 0; i < m_shopButtons.size(); i++) {
 		auto* pBtn = m_shopButtons[i];
-		if (pBtn && pBtn->IsWindowVisible())
-		{
+		if (pBtn && pBtn->IsWindowVisible()) {
 			CRect rect;
 			pBtn->GetWindowRect(&rect);
 			ScreenToClient(&rect);
 
-			if (rect.PtInRect(point))
-			{
+			if (rect.PtInRect(point)) {
 				newHoveredId = (int)i;
 				break;
 			}
 		}
 	}
 
-	// í˜¸ë²„ ìƒíƒœ ë³€ê²½
 	m_hoveredItemId = newHoveredId;
 }
