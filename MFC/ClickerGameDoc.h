@@ -26,6 +26,14 @@ private:
 	CString SerializeGameState(const GameState& state) const;
 	void DeserializeGameState(GameState& state, const CString& data) const;
 
+	CString GenerateBasicStatsString(const GameState& state) const;
+	CString GenerateUpgradesString(const GameState& state) const;
+	CString GenerateSpecialUpgradesString(const GameState& state) const;
+
+	void ParseUpgradeLine(GameState& state, const CString& line) const;
+	void ParseSpecialUpgradeLine(GameState& state, const CString& line) const;
+	void ParseBasicStatLine(GameState& state, const CString& line) const;
+
 // 재정의입니다.
 public:
 	virtual BOOL OnNewDocument();

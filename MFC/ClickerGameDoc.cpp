@@ -37,7 +37,6 @@ BOOL CClickerGameDoc::OnNewDocument()
 	if (!CDocument::OnNewDocument())
 		return FALSE;
 
-	// 새 문서 시작 시 게임 상태 초기화
 	m_gameCore.GetState().Reset();
 
 	return TRUE;
@@ -45,121 +44,170 @@ BOOL CClickerGameDoc::OnNewDocument()
 
 // CClickerGameDoc serialization helpers
 
-CString CClickerGameDoc::SerializeGameState(const GameState& state) const {
-    CString data;
-    data = _T("GAMESTATE\n");
-    
-    // 기본 게임 상태 저장
-    CString line;
-    line.Format(_T("TOTAL_CLICKS=%.2f\n"), state.GetTotalClicks());
-    data += line;
-    
-    line.Format(_T("CLICK_POWER=%.2f\n"), state.GetClickPower());
-    data += line;
-    
-    // 업그레이드 데이터 저장
-    data += _T("UPGRADES_START\n");
-    const auto& upgrades = state.GetUpgrades();
-    for (const auto& upgrade : upgrades) {
-        line.Format(_T("%d:%d\n"), upgrade.id, upgrade.owned);
-        data += line;
-    }
-    data += _T("UPGRADES_END\n");
-    
-    // 특별 업그레이드 데이터 저장
-    data += _T("SPECIAL_UPGRADES_START\n");
-    const auto& specialUpgrades = state.GetSpecialUpgrades();
-    for (const auto& specialUpgrade : specialUpgrades) {
-        if (specialUpgrade.isPurchased) {
-            line.Format(_T("%d:1\n"), specialUpgrade.id);
-            data += line;
-        }
-    }
-    data += _T("SPECIAL_UPGRADES_END\n");
-    
-    return data;
+CString CClickerGameDoc::SerializeGameState(const GameState& state) const
+{
+	CString data = _T("GAMESTATE\n");
+	data += GenerateBasicStatsString(state);
+	data += GenerateUpgradesString(state);
+	data += GenerateSpecialUpgradesString(state);
+	return data;
 }
 
-void CClickerGameDoc::DeserializeGameState(GameState& state, const CString& data) const {
-    int pos = 0;
-    bool inUpgrades = false;
-    bool inSpecialUpgrades = false;
-    
-    while (pos < data.GetLength()) {
-        int newlinePos = data.Find(_T('\n'), pos);
-        if (newlinePos < 0) {
-            newlinePos = data.GetLength();
-        }
-        
-        CString line = data.Mid(pos, newlinePos - pos);
-        line.Trim();
-        
-        if (!line.IsEmpty()) {
-            if (line == _T("UPGRADES_START")) {
-                inUpgrades = true;
-                inSpecialUpgrades = false;
-            }
-            else if (line == _T("UPGRADES_END")) {
-                inUpgrades = false;
-            }
-            else if (line == _T("SPECIAL_UPGRADES_START")) {
-                inSpecialUpgrades = true;
-                inUpgrades = false;
-            }
-            else if (line == _T("SPECIAL_UPGRADES_END")) {
-                inSpecialUpgrades = false;
-            }
-            else if (inUpgrades) {
-                int colonPos = line.Find(_T(':'));
-                if (colonPos > 0) {
-                    CString idStr = line.Left(colonPos);
-                    CString ownedStr = line.Mid(colonPos + 1);
-                    idStr.Trim();
-                    ownedStr.Trim();
-                    
-                    int id = _wtoi(idStr);
-                    int owned = _wtoi(ownedStr);
-                    
-                    auto& upgrades = state.GetUpgrades();
-                    if (id >= 0 && id < static_cast<int>(upgrades.size())) {
-                        upgrades[id].owned = owned;
-                    }
-                }
-            }
-            else if (inSpecialUpgrades) {
-                int colonPos = line.Find(_T(':'));
-                if (colonPos > 0) {
-                    CString idStr = line.Left(colonPos);
-                    idStr.Trim();
-                    
-                    int id = _wtoi(idStr);
-                    
-                    auto& specialUpgrades = state.GetSpecialUpgrades();
-                    if (id >= 0 && id < static_cast<int>(specialUpgrades.size())) {
-                        specialUpgrades[id].isPurchased = true;
-                    }
-                }
-            }
-            else {
-                int equalPos = line.Find(_T('='));
-                if (equalPos > 0) {
-                    CString key = line.Left(equalPos);
-                    CString value = line.Mid(equalPos + 1);
-                    key.Trim();
-                    value.Trim();
-                    
-                    if (key == _T("TOTAL_CLICKS")) {
-                        state.SetTotalClicks(_wtof(value));
-                    }
-                    else if (key == _T("CLICK_POWER")) {
-                        state.SetClickPower(_wtof(value));
-                    }
-                }
-            }
-        }
-        
-        pos = newlinePos + 1;
-    }
+CString CClickerGameDoc::GenerateBasicStatsString(const GameState& state) const
+{
+	CString data;
+	CString line;
+
+	line.Format(_T("TOTAL_CLICKS=%.2f\n"), state.GetTotalClicks());
+	data += line;
+
+	line.Format(_T("CLICK_POWER=%.2f\n"), state.GetClickPower());
+	data += line;
+
+	return data;
+}
+
+CString CClickerGameDoc::GenerateUpgradesString(const GameState& state) const
+{
+	CString data = _T("UPGRADES_START\n");
+	CString line;
+
+	for (const auto& upgrade : state.GetUpgrades())
+	{
+		line.Format(_T("%d:%d\n"), upgrade.id, upgrade.owned);
+		data += line;
+	}
+
+	data += _T("UPGRADES_END\n");
+	return data;
+}
+
+CString CClickerGameDoc::GenerateSpecialUpgradesString(const GameState& state) const
+{
+	CString data = _T("SPECIAL_UPGRADES_START\n");
+	CString line;
+
+	for (const auto& specialUpgrade : state.GetSpecialUpgrades())
+	{
+		if (specialUpgrade.isPurchased)
+		{
+			line.Format(_T("%d:1\n"), specialUpgrade.id);
+			data += line;
+		}
+	}
+
+	data += _T("SPECIAL_UPGRADES_END\n");
+	return data;
+}
+
+void CClickerGameDoc::DeserializeGameState(GameState& state, const CString& data) const
+{
+	int pos = 0;
+	bool inUpgrades = false;
+	bool inSpecialUpgrades = false;
+
+	while (pos < data.GetLength())
+	{
+		int newlinePos = data.Find(_T('\n'), pos);
+		if (newlinePos < 0)
+		{
+			newlinePos = data.GetLength();
+		}
+
+		CString line = data.Mid(pos, newlinePos - pos);
+		line.Trim();
+
+		if (!line.IsEmpty())
+		{
+			if (line == _T("UPGRADES_START"))
+			{
+				inUpgrades = true;
+				inSpecialUpgrades = false;
+			}
+			else if (line == _T("UPGRADES_END"))
+			{
+				inUpgrades = false;
+			}
+			else if (line == _T("SPECIAL_UPGRADES_START"))
+			{
+				inSpecialUpgrades = true;
+				inUpgrades = false;
+			}
+			else if (line == _T("SPECIAL_UPGRADES_END"))
+			{
+				inSpecialUpgrades = false;
+			}
+			else if (inUpgrades)
+			{
+				ParseUpgradeLine(state, line);
+			}
+			else if (inSpecialUpgrades)
+			{
+				ParseSpecialUpgradeLine(state, line);
+			}
+			else
+			{
+				ParseBasicStatLine(state, line);
+			}
+		}
+
+		pos = newlinePos + 1;
+	}
+}
+
+void CClickerGameDoc::ParseUpgradeLine(GameState& state, const CString& line) const
+{
+	int colonPos = line.Find(_T(':'));
+	if (colonPos > 0)
+	{
+		CString idStr = line.Left(colonPos);
+		CString ownedStr = line.Mid(colonPos + 1);
+		
+		int id = _wtoi(idStr);
+		int owned = _wtoi(ownedStr);
+
+		auto& upgrades = state.GetUpgrades();
+		if (id >= 0 && id < static_cast<int>(upgrades.size()))
+		{
+			upgrades[id].owned = owned;
+		}
+	}
+}
+
+void CClickerGameDoc::ParseSpecialUpgradeLine(GameState& state, const CString& line) const
+{
+	int colonPos = line.Find(_T(':'));
+	if (colonPos > 0)
+	{
+		CString idStr = line.Left(colonPos);
+		
+		int id = _wtoi(idStr);
+
+		auto& specialUpgrades = state.GetSpecialUpgrades();
+		if (id >= 0 && id < static_cast<int>(specialUpgrades.size()))
+		{
+			specialUpgrades[id].isPurchased = true;
+		}
+	}
+}
+
+void CClickerGameDoc::ParseBasicStatLine(GameState& state, const CString& line) const
+{
+	int equalPos = line.Find(_T('='));
+	if (equalPos > 0)
+	{
+		CString key = line.Left(equalPos);
+		CString value = line.Mid(equalPos + 1);
+		
+		if (key == _T("TOTAL_CLICKS"))
+		{
+			state.SetTotalClicks(_wtof(value));
+		}
+		else if (key == _T("CLICK_POWER"))
+		{
+			state.SetClickPower(_wtof(value));
+		}
+	}
 }
 
 // CClickerGameDoc serialization
@@ -168,21 +216,18 @@ void CClickerGameDoc::Serialize(CArchive& ar)
 {
 	if (ar.IsStoring())
 	{
-		// 커스텀 포맷으로 직렬화하여 저장
 		CString data = SerializeGameState(m_gameCore.GetState());
 		
-		// CString을 UTF-16으로 저장
 		int len = data.GetLength();
 		ar << len;
 		ar.WriteString(data);
 	}
 	else
 	{
-		// 커스텀 포맷 역직렬화하여 로드
 		int len = 0;
 		ar >> len;
 		
-		if (len > 0 && len < 1000000) // 안전성 체크 (1MB 미만)
+		if (len > 0 && len < 1000000)
 		{
 			CString data;
 			TCHAR* buffer = data.GetBuffer(len + 1);
