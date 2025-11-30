@@ -1,8 +1,4 @@
-﻿```cpp
-// GdiDialogBase.cpp: Implementation file
-//
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "GdiDialogBase.h"
 
 IMPLEMENT_DYNAMIC(GdiDialogBase, CDialogEx)
@@ -139,4 +135,3 @@ void GdiDialogBase::RenderFrame()
 	// Update screen
 	InvalidateRect(nullptr, FALSE);
 }
-```
